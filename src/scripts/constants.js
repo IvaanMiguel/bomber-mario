@@ -7,9 +7,14 @@ export const control = {
   PAUSE: 'pause'
 }
 
-export const TILE_SIDE = 16
-export const SCREEN_WIDTH = 16 * TILE_SIDE
-export const SCREEN_HEIGHT = 16 * TILE_SIDE
+export const tiles = {
+  WALL: 10,
+  FLOOR: 11
+}
+
+export const TILE_SIZE = 16
+export const SCREEN_WIDTH = 17 * TILE_SIZE
+export const SCREEN_HEIGHT = 15 * TILE_SIZE
 
 export const CANVAS_ID = 'canvas'
 
