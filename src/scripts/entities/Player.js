@@ -1,3 +1,5 @@
+import BombPlacer from '../components/BombPlacer.js';
+import { addComponent } from '../components/utils.js';
 import { HALF_TILE_SIZE, TILE_SIZE, cornerDirections, direction, movementOrientation, collisionTile } from '../constants.js';
 import * as controlHandler from '../core/inputHandler.js';
 import { collisionMap } from '../levelsData.js';
@@ -6,14 +8,18 @@ import Entity from './Entity.js';
 const VELOCITY = 120
 
 class Player {
-  constructor(position) {
+  constructor(position, addBomb) {
     this.inst = new Entity({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
     })
 
+    addComponent(this, new BombPlacer(this))
+
     this.width = 16
     this.height = 16
+
+    this.addBomb = addBomb
   }
 
   getCollisionCoords(playerDirection) {
@@ -45,7 +51,15 @@ class Player {
 
   isBarrierTile(tileValue) { return Object.values(collisionTile.BARRIER).includes(tileValue) }
 
-  getCollisionTile(collisionCoords) { return collisionMap[collisionCoords.row][collisionCoords.col] }
+  getCollisionTile(collisionCoords) {
+    const lastBombCell = this.bombPlacer.lastBombCell
+
+    if (lastBombCell && collisionCoords.row === lastBombCell.row && collisionCoords.col === lastBombCell.col) {
+      return collisionTile.EMPTY
+    }
+
+    return collisionMap[collisionCoords.row][collisionCoords.col]
+  }
 
   coordsShouldBlockMovement(collisionCoords, collisionTiles) {
     /* Para verificar que ambas mitades de las coordenadas de colisión estén en el mismo tile. */
@@ -103,6 +117,8 @@ class Player {
   update(time) {
     this.updatePosition(time)
     this.inst.velocity = this.getMovement()[1]
+    this.bombPlacer.handleBombPlacement(time)
+    this.bombPlacer.resetLastBombCell()
   }
 
   draw(ctx) {
