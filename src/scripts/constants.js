@@ -34,6 +34,7 @@ export const tiles = {
 }
 
 export const TILE_SIZE = 16
+export const HALF_TILE_SIZE = TILE_SIZE / 2
 export const SCREEN_WIDTH = 17 * TILE_SIZE
 export const SCREEN_HEIGHT = 15 * TILE_SIZE
 
