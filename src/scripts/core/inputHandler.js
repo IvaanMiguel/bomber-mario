@@ -1,3 +1,4 @@
+import { control } from '../constants.js';
 import { player_controls } from '../controls.js';
 
 const playerKeys = Object.values(player_controls).flat()
@@ -27,6 +28,12 @@ export function addKeyEventsListeners() {
 
   window.addEventListener('visibilitychange', handleVisibilityChange)
 }
+
+
+export const isUp = key => player_controls[control.UP] === key
+export const isLeft = key => player_controls[control.LEFT] === key
+export const isDown = key => player_controls[control.DOWN] === key
+export const isRight = key => player_controls[control.RIGHT] === key
 
 export const noControlDown = () => heldKeys.size === 0
 export const getLastControlDown = () => [...heldKeys][heldKeys.size - 1]
