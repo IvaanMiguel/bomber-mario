@@ -7,9 +7,9 @@ const tileColor = {
   11: 'darkgreen'
 }
 
-class LevelMap {
+class LevelMap extends Entity {
   constructor() {
-    this.inst = new Entity({ x: 0, y: 0 })
+    super({ x: 0, y: 0 })
     
     this.tileMap = tileMap
     this.mapImage = new OffscreenCanvas(1024, 1024)
@@ -31,7 +31,7 @@ class LevelMap {
   }
 
   draw(ctx) {
-    ctx.drawImage(this.mapImage, 0, 0)
+    ctx.drawImage(this.mapImage, this.position.x, this.position.y)
   }
 }
 
