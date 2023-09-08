@@ -1,64 +1,108 @@
-import { SCREEN_HEIGHT, SCREEN_WIDTH, control } from '../constants.js';
-import { player_controls } from '../controls.js';
-import { getLastControlDown, noControlDown } from '../core/inputHandler.js';
+import { TILE_SIZE, cornerDirections, direction, movementOrientation, tiles } from '../constants.js';
+import * as controlHandler from '../core/inputHandler.js';
+import { tileMap } from '../levelsData.js';
 import Entity from './Entity.js';
 
 const VELOCITY = 120
 
 class Player {
   constructor(position) {
-    this.inst = new Entity(position)
+    this.inst = new Entity({
+      x: position.col * TILE_SIZE + (TILE_SIZE / 2),
+      y: position.row * TILE_SIZE + (TILE_SIZE / 2)
+    })
 
     this.width = 16
     this.height = 16
-
-    this._mapKeys()
   }
 
-  _mapKeys() {
+  getCollisionCoords(playerDirection) {
     const inst = this.inst
 
-    this._mappedControls = {
-      [player_controls[control.UP]]: () => {
-        if (inst.position.y <= 0) inst.position.y = 0
-        inst.velocity = inst.position.y === 0 ? { x: 0, y: 0 } : { x: 0, y: -VELOCITY }
-      },
-      [player_controls[control.LEFT]]: () => {
-        if (inst.position.x <= 0) inst.position.x = 0
-        inst.velocity = inst.position.x === 0 ? { x: 0, y: 0 } : { x: -VELOCITY, y: 0 }
-      },
-      [player_controls[control.DOWN]]: () => {
-        if (inst.position.y + this.height >= SCREEN_HEIGHT) inst.position.y = SCREEN_HEIGHT - this.height
-        inst.velocity = inst.position.y === SCREEN_HEIGHT - this.height ? { x: 0, y: 0 } : { x: 0, y: VELOCITY }
-      },
-      [player_controls[control.RIGHT]]: () => {
-        if (inst.position.x + this.width >= SCREEN_WIDTH) inst.position.x = SCREEN_WIDTH - this.width
-        inst.velocity = inst.position.x === SCREEN_WIDTH - this.width ? { x: 0, y: 0 } : { x: VELOCITY, y: 0 }
-      }
+    switch(playerDirection) {
+      case direction.UP:
+        return [
+          { row: Math.floor((inst.position.y - 9) / TILE_SIZE), col: Math.floor((inst.position.x - 8) / TILE_SIZE) },
+          { row: Math.floor((inst.position.y - 9) / TILE_SIZE), col: Math.floor((inst.position.x + 7) / TILE_SIZE) }
+        ]
+      case direction.LEFT:
+        return [
+          { row: Math.floor((inst.position.y - 8) / TILE_SIZE), col: Math.floor((inst.position.x - 9) / TILE_SIZE) },
+          { row: Math.floor((inst.position.y + 7) / TILE_SIZE), col: Math.floor((inst.position.x - 9) / TILE_SIZE) }
+        ]
+      case direction.DOWN:
+        return [
+          { row: Math.floor((inst.position.y + 8) / TILE_SIZE), col: Math.floor((inst.position.x - 8) / TILE_SIZE) },
+          { row: Math.floor((inst.position.y + 8) / TILE_SIZE), col: Math.floor((inst.position.x + 7) / TILE_SIZE) }
+        ]
+      case direction.RIGHT:
+        return [
+          { row: Math.floor((inst.position.y - 8) / TILE_SIZE), col: Math.floor((inst.position.x + 8) / TILE_SIZE) },
+          { row: Math.floor((inst.position.y + 7) / TILE_SIZE), col: Math.floor((inst.position.x + 8) / TILE_SIZE) }
+        ]
     }
   }
 
-  _predictPosition(time, position, velocity) { return position + velocity * time }
+  getCollisionTile(collisionCoords) { return tileMap[collisionCoords.row][collisionCoords.col] }
+
+  coordsShouldBlockMovement(collisionCoords) {
+    /* Para verificar que ambas mitades de las coordenadas de colisión estén en el mismo tile. */
+    const collisionCoordsMatch = collisionCoords[0].row === collisionCoords[1].row &&
+        collisionCoords[0].col === collisionCoords[1].col
+    const collisionTiles = [this.getCollisionTile(collisionCoords[0]), this.getCollisionTile(collisionCoords[1])]
+
+    return (collisionCoordsMatch && collisionTiles[0] === tiles.WALL) ||
+        (collisionTiles[0] === tiles.WALL && collisionTiles[1] === tiles.WALL)
+  }
+
+  checkWallCollision(playerDirection) {
+    const collisionCoords = this.getCollisionCoords(playerDirection)
+    if (this.coordsShouldBlockMovement(collisionCoords)) return [direction.DOWN, { x: 0, y: 0 }]
+
+    const alternativeDirections = cornerDirections[playerDirection]
+    if (this.getCollisionTile(collisionCoords[0]) === tiles.WALL) {
+      return [alternativeDirections[0], movementOrientation[alternativeDirections[0]]]
+    }
+    if (this.getCollisionTile(collisionCoords[1]) === tiles.WALL) {
+      return [alternativeDirections[1], movementOrientation[alternativeDirections[1]]]
+    }
+
+    return [playerDirection, movementOrientation[playerDirection]]
+  }
+
+  getMovement(){
+    const controlDown = controlHandler.getLastControlDown()
+
+    if (controlHandler.isUp(controlDown)) {
+      return this.checkWallCollision(direction.UP)
+    } else if (controlHandler.isLeft(controlDown)) {
+      return this.checkWallCollision(direction.LEFT)
+    } else if (controlHandler.isDown(controlDown)) {
+      return this.checkWallCollision(direction.DOWN)
+    } else if (controlHandler.isRight(controlDown)) {
+      return this.checkWallCollision(direction.RIGHT)
+    }
+
+    return [direction.DOWN, { x: 0, y: 0 }]
+  }
 
   updatePosition(time) {
-		this.inst.position.x += this.inst.velocity.x * time.secondsPassed
-		this.inst.position.y += this.inst.velocity.y * time.secondsPassed
+		this.inst.position.x += this.inst.velocity.x * VELOCITY * .8 * time.secondsPassed
+		this.inst.position.y += this.inst.velocity.y * VELOCITY * .8 * time.secondsPassed
 	}
 
   update(time) {
-    if (noControlDown()) {
-      this.inst.velocity = { x: 0, y: 0}
-      return
-    }
-
     this.updatePosition(time)
-
-    const controlDown = getLastControlDown()
-    this._mappedControls[controlDown]()
+    this.inst.velocity = this.getMovement()[1]
   }
 
   draw(ctx) {
-    ctx.fillRect(this.inst.position.x, this.inst.position.y, this.width, this.height)
+    ctx.fillRect(
+      this.inst.position.x - (TILE_SIZE / 2),
+      this.inst.position.y - (TILE_SIZE / 2),
+      this.width,
+      this.height
+    )
   }
 }
 
