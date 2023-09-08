@@ -7,6 +7,27 @@ export const control = {
   PAUSE: 'pause'
 }
 
+export const direction = {
+  UP: 'up-direction',
+  LEFT: 'left-direction',
+  DOWN: 'down-direction',
+  RIGHT: 'right-direction'
+}
+
+export const cornerDirections = {
+  [direction.UP]: [direction.RIGHT, direction.LEFT],
+  [direction.LEFT]: [direction.DOWN, direction.UP],
+  [direction.DOWN]: [direction.RIGHT, direction.LEFT],
+  [direction.RIGHT]: [direction.DOWN, direction.UP]
+}
+
+export const movementOrientation = {
+  [direction.UP]: { x: 0, y: -1 },
+  [direction.LEFT]: { x: -1, y: 0 },
+  [direction.DOWN]: { x: 0, y: 1 },
+  [direction.RIGHT]: { x: 1, y: 0 }
+}
+
 export const tiles = {
   WALL: 10,
   FLOOR: 11
