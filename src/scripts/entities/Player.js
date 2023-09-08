@@ -1,4 +1,4 @@
-import { TILE_SIZE, cornerDirections, direction, movementOrientation, tiles } from '../constants.js';
+import { HALF_TILE_SIZE, TILE_SIZE, cornerDirections, direction, movementOrientation, tiles } from '../constants.js';
 import * as controlHandler from '../core/inputHandler.js';
 import { tileMap } from '../levelsData.js';
 import Entity from './Entity.js';
@@ -8,8 +8,8 @@ const VELOCITY = 120
 class Player {
   constructor(position) {
     this.inst = new Entity({
-      x: position.col * TILE_SIZE + (TILE_SIZE / 2),
-      y: position.row * TILE_SIZE + (TILE_SIZE / 2)
+      x: position.col * TILE_SIZE + HALF_TILE_SIZE,
+      y: position.row * TILE_SIZE + HALF_TILE_SIZE
     })
 
     this.width = 16
@@ -98,8 +98,8 @@ class Player {
 
   draw(ctx) {
     ctx.fillRect(
-      this.inst.position.x - (TILE_SIZE / 2),
-      this.inst.position.y - (TILE_SIZE / 2),
+      this.inst.position.x - HALF_TILE_SIZE,
+      this.inst.position.y - HALF_TILE_SIZE,
       this.width,
       this.height
     )
