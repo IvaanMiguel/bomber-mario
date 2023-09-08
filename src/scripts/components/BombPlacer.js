@@ -15,8 +15,8 @@ class BombPlacer {
     if (!this.lastBombCell) return
 
      const playerCell = {
-      row: Math.floor(this.inst.inst.position.y / TILE_SIZE),
-      col: Math.floor(this.inst.inst.position.x / TILE_SIZE),
+      row: Math.floor(this.inst.position.y / TILE_SIZE),
+      col: Math.floor(this.inst.position.x / TILE_SIZE),
     }
     
     if (playerCell.row === this.lastBombCell.row && playerCell.col === this.lastBombCell.col) return
@@ -33,8 +33,8 @@ class BombPlacer {
       if (this.bombAmount <= 0) return
 
       const playerCell = {
-        row: Math.floor(this.inst.inst.position.y / TILE_SIZE),
-        col: Math.floor(this.inst.inst.position.x / TILE_SIZE),
+        row: Math.floor(this.inst.position.y / TILE_SIZE),
+        col: Math.floor(this.inst.position.x / TILE_SIZE),
       }
 
       if (collisionMap[playerCell.row][playerCell.col] !== collisionTile.EMPTY) return

@@ -7,9 +7,9 @@ import Entity from './Entity.js';
 
 const VELOCITY = 120
 
-class Player {
+class Player extends Entity {
   constructor(position, addBomb) {
-    this.inst = new Entity({
+    super({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
     })
@@ -23,28 +23,26 @@ class Player {
   }
 
   getCollisionCoords(playerDirection) {
-    const inst = this.inst
-
     switch(playerDirection) {
       case direction.UP:
         return [
-          { row: Math.floor((inst.position.y - 9) / TILE_SIZE), col: Math.floor((inst.position.x - 8) / TILE_SIZE) },
-          { row: Math.floor((inst.position.y - 9) / TILE_SIZE), col: Math.floor((inst.position.x + 7) / TILE_SIZE) }
+          { row: Math.floor((this.position.y - 9) / TILE_SIZE), col: Math.floor((this.position.x - 8) / TILE_SIZE) },
+          { row: Math.floor((this.position.y - 9) / TILE_SIZE), col: Math.floor((this.position.x + 7) / TILE_SIZE) }
         ]
       case direction.LEFT:
         return [
-          { row: Math.floor((inst.position.y - 8) / TILE_SIZE), col: Math.floor((inst.position.x - 9) / TILE_SIZE) },
-          { row: Math.floor((inst.position.y + 7) / TILE_SIZE), col: Math.floor((inst.position.x - 9) / TILE_SIZE) }
+          { row: Math.floor((this.position.y - 8) / TILE_SIZE), col: Math.floor((this.position.x - 9) / TILE_SIZE) },
+          { row: Math.floor((this.position.y + 7) / TILE_SIZE), col: Math.floor((this.position.x - 9) / TILE_SIZE) }
         ]
       case direction.DOWN:
         return [
-          { row: Math.floor((inst.position.y + 8) / TILE_SIZE), col: Math.floor((inst.position.x - 8) / TILE_SIZE) },
-          { row: Math.floor((inst.position.y + 8) / TILE_SIZE), col: Math.floor((inst.position.x + 7) / TILE_SIZE) }
+          { row: Math.floor((this.position.y + 8) / TILE_SIZE), col: Math.floor((this.position.x - 8) / TILE_SIZE) },
+          { row: Math.floor((this.position.y + 8) / TILE_SIZE), col: Math.floor((this.position.x + 7) / TILE_SIZE) }
         ]
       case direction.RIGHT:
         return [
-          { row: Math.floor((inst.position.y - 8) / TILE_SIZE), col: Math.floor((inst.position.x + 8) / TILE_SIZE) },
-          { row: Math.floor((inst.position.y + 7) / TILE_SIZE), col: Math.floor((inst.position.x + 8) / TILE_SIZE) }
+          { row: Math.floor((this.position.y - 8) / TILE_SIZE), col: Math.floor((this.position.x + 8) / TILE_SIZE) },
+          { row: Math.floor((this.position.y + 7) / TILE_SIZE), col: Math.floor((this.position.x + 8) / TILE_SIZE) }
         ]
     }
   }
@@ -110,13 +108,13 @@ class Player {
   }
 
   updatePosition(time) {
-		this.inst.position.x += this.inst.velocity.x * VELOCITY * .8 * time.secondsPassed
-		this.inst.position.y += this.inst.velocity.y * VELOCITY * .8 * time.secondsPassed
+		this.position.x += this.velocity.x * VELOCITY * .8 * time.secondsPassed
+		this.position.y += this.velocity.y * VELOCITY * .8 * time.secondsPassed
 	}
 
   update(time) {
     this.updatePosition(time)
-    this.inst.velocity = this.getMovement()[1]
+    this.velocity = this.getMovement()[1]
     this.bombPlacer.handleBombPlacement(time)
     this.bombPlacer.resetLastBombCell()
   }
@@ -124,8 +122,8 @@ class Player {
   draw(ctx) {
     ctx.fillStyle = 'black'
     ctx.fillRect(
-      this.inst.position.x - HALF_TILE_SIZE,
-      this.inst.position.y - HALF_TILE_SIZE,
+      this.position.x - HALF_TILE_SIZE,
+      this.position.y - HALF_TILE_SIZE,
       this.width,
       this.height
     )
