@@ -28,9 +28,18 @@ export const movementOrientation = {
   [direction.RIGHT]: { x: 1, y: 0 }
 }
 
-export const tiles = {
+export const tile = {
   WALL: 10,
   FLOOR: 11
+}
+
+export const collisionTile = {
+  EMPTY: 104,
+  BARRIER: {
+    WALL: 101,
+    BLOCK: 102,
+    BOMB: 103
+  }
 }
 
 export const TILE_SIZE = 16
