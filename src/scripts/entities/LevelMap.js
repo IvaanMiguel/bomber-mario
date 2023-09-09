@@ -11,7 +11,7 @@ import { collisionMap, tileMap } from '../levelsData.js'
 const tileColor = {
   10: 'darkgray',
   11: 'darkgreen',
-  12: 'gray'
+  12: 'lightgray'
 }
 
 class LevelMap extends Entity {
@@ -25,6 +25,13 @@ class LevelMap extends Entity {
     this.buildMap()
   }
 
+  updateMapAt(cell, tileMap, collisionTile) {
+    this.ctx.fillStyle = tileColor[tileMap]
+    this.ctx.fillRect(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    this.tileMap [cell.row][cell.col] = tileMap
+    collisionMap[cell.row][cell.col] = collisionTile
+  }
+
   addBlockTileAt(cell) {
     const cellAtStartZone = startTiles.some(([startRow, startCol]) => {
       return startRow === cell.row && startCol === cell.col
@@ -34,9 +41,7 @@ class LevelMap extends Entity {
       return false
     }
     
-    this.ctx.fillRect(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-    tileMap[cell.row][cell.col] = tile.BLOCK
-    collisionMap[cell.row][cell.col] = collisionTile.BARRIER.BLOCK
+    this.updateMapAt(cell, tile.BLOCK, collisionTile.BARRIER.BLOCK)
 
     return true
   }
@@ -44,7 +49,7 @@ class LevelMap extends Entity {
   addBlocks() {
     const blocks = []
 
-    this.ctx.fillStyle = 'lightgray'
+    // this.ctx.fillStyle = 'lightgray'
     while (blocks.length < MAX_TOTAL_BLOCKS) {
       const cell = {
         row: 1 + Math.floor(Math.random() * (tileMap.length - 2)),
