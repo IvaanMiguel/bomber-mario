@@ -1,6 +1,12 @@
+import {
+  MAX_TOTAL_BLOCKS,
+  TILE_SIZE,
+  collisionTile,
+  startTiles,
+  tile
+} from '../constants.js'
 import Entity from './Entity.js'
 import { collisionMap, tileMap } from '../levelsData.js'
-import { MAX_TOTAL_BLOCKS, TILE_SIZE, collisionTile, startTiles } from '../constants.js'
 
 const tileColor = {
   10: 'darkgray',
@@ -29,6 +35,7 @@ class LevelMap extends Entity {
     }
     
     this.ctx.fillRect(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    tileMap[cell.row][cell.col] = tile.BLOCK
     collisionMap[cell.row][cell.col] = collisionTile.BARRIER.BLOCK
 
     return true
