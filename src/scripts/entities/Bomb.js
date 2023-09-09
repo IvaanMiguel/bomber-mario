@@ -18,9 +18,7 @@ class Bomb extends Entity {
   }
 
   updateTimer(time) {
-    if (time.previous < this.timer) return
-
-    this.onBombEnd(this)
+    if (time.previous >= this.timer) this.onBombEnd(this)
   }
 
   draw(ctx) {
