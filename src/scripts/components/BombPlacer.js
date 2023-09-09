@@ -5,6 +5,7 @@ import { collisionMap } from '../levelsData.js'
 class BombPlacer {
   name = 'bombPlacer'
   bombAmount = 1
+  bombStrength = 2
   lastBombCell = null
 
   constructor(inst) {
@@ -24,6 +25,7 @@ class BombPlacer {
     this.lastBombCell = null
   }
 
+  // Este método existe debido a que BombSystem no tiene acceso ni al jugador ni a este componente.
   onBombExploded = () => { if (this.bombAmount === 0) this.bombAmount += 1 }
 
   handleBombPlacement(time) {
@@ -42,7 +44,7 @@ class BombPlacer {
       this.bombAmount -= 1
       this.lastBombCell = playerCell
 
-      this.inst.addBomb(playerCell, time, this.onBombExploded)
+      this.inst.addBomb(playerCell, time, this.bombStrength, this.onBombExploded)
     }
   }
 }
