@@ -10,7 +10,7 @@ class Scene {
     this.ctx.imageSmoothingEnabled = false;
 
     this.levelMap = new LevelMap()
-    this.bombsSystem = new BombsSystem()
+    this.bombsSystem = new BombsSystem(this.levelMap)
     this.player = new Player({ row: 1, col: 1 }, this.bombsSystem.add)
   }
 
