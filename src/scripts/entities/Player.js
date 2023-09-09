@@ -108,8 +108,8 @@ class Player extends Entity {
   }
 
   updatePosition(time) {
-		this.position.x += this.velocity.x * VELOCITY * .8 * time.secondsPassed
-		this.position.y += this.velocity.y * VELOCITY * .8 * time.secondsPassed
+		this.position.x += this.velocity.x * VELOCITY * .6 * time.secondsPassed
+		this.position.y += this.velocity.y * VELOCITY * .6 * time.secondsPassed
 	}
 
   update(time) {
