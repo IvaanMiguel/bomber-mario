@@ -28,6 +28,8 @@ export const movementOrientation = {
   [direction.RIGHT]: { x: 1, y: 0 }
 }
 
+export const flameDirections = [[0, -1], [-1, 0], [0, 1], [1, 0]]
+
 export const tile = {
   WALL: 10,
   FLOOR: 11
@@ -39,10 +41,12 @@ export const collisionTile = {
     WALL: 101,
     BLOCK: 102,
     BOMB: 103
-  }
+  },
+  FLAME: 105
 }
 
-export const BOMB_TIMER = 3 * 1000
+export const BOMB_TIMER = 2 * 1000
+export const EXPLOSION_TIMER = .5 * 1000
 
 export const TILE_SIZE = 16
 export const HALF_TILE_SIZE = TILE_SIZE / 2
