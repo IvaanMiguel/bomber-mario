@@ -12,21 +12,19 @@ class BombPlacer {
     this.inst = inst
   }
 
-  resetLastBombCell() {
-    if (!this.lastBombCell) return
-
-     const playerCell = {
-      row: Math.floor(this.inst.position.y / TILE_SIZE),
-      col: Math.floor(this.inst.position.x / TILE_SIZE),
+  resetLastBombCell(playerCell) {
+    if (!this.lastBombCell || (playerCell.row === this.lastBombCell.row &&
+        playerCell.col === this.lastBombCell.col)) {
+      return
     }
-    
-    if (playerCell.row === this.lastBombCell.row && playerCell.col === this.lastBombCell.col) return
 
     this.lastBombCell = null
   }
 
   // Este método existe debido a que BombSystem no tiene acceso ni al jugador ni a este componente.
-  onBombExploded = () => { if (this.bombAmount === 0) this.bombAmount += 1 }
+  onBombExploded = () => {
+    if (this.bombAmount === 0) this.bombAmount += 1
+  }
 
   handleBombPlacement(time) {
     const controlDown = getLastControlDown()
