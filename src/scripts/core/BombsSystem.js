@@ -1,10 +1,22 @@
-import { collisionTile, flameDirections } from '../constants.js'
+import { collisionTile, flameDirections, tile } from '../constants.js'
 import Bomb from '../entities/Bomb.js'
 import BombExplosion from '../entities/BombExplosion.js'
-import { collisionMap } from '../levelsData.js'
+import { collisionMap, tileMap } from '../levelsData.js'
 
 class BombsSystem {
   bombs = []
+
+  constructor(levelMap) {
+    this.levelMap = levelMap
+  }
+
+  checkFlamesCollision(cell) {
+    if (collisionMap[cell.row][cell.col] === collisionTile.EMPTY) return
+
+    if (collisionMap[cell.row][cell.col] === collisionTile.BARRIER.BLOCK) {
+      this.levelMap.updateMapAt(cell, tile.FLOOR, collisionTile.EMPTY)
+    }
+  }
 
   getFlameCells(direction, centerCell, flameLength) {
     const flameCells = []
@@ -19,7 +31,7 @@ class BombsSystem {
       flameCells.push({ ...cell })
     }
 
-    return flameCells
+    return { cells: flameCells, lastCell: cell }
   }
 
   handleBombExploded(time, bomb, bombStrength) {
@@ -30,7 +42,9 @@ class BombsSystem {
     const flameCells = []
 
     flameDirections.forEach(direction => {
-      const cells = this.getFlameCells(direction, bomb.cell, bombStrength)
+      const { cells, lastCell } = this.getFlameCells(direction, bomb.cell, bombStrength)
+
+      this.checkFlamesCollision(lastCell)
 
       if (cells.length > 0) flameCells.push(...cells)
     })
