@@ -107,6 +107,27 @@ class Player extends Entity {
     return [direction.DOWN, { x: 0, y: 0 }]
   }
 
+  checkCellUnderneath() {
+    const playerCell = {
+      row: Math.floor(this.position.y / TILE_SIZE),
+      col: Math.floor(this.position.x / TILE_SIZE),
+    }
+
+    this.bombPlacer.resetLastBombCell(playerCell)
+   
+    // Para revisar si se colisiona con una llama.
+    if (this.getCollisionTile(playerCell) === collisionTile.FLAME) {
+      this.resetPosition()
+    }
+  }
+
+  resetPosition() {
+    this.position = {
+      x: TILE_SIZE + HALF_TILE_SIZE,
+      y: TILE_SIZE + HALF_TILE_SIZE
+    }
+  }
+
   updatePosition(time) {
 		this.position.x += this.velocity.x * VELOCITY * .6 * time.secondsPassed
 		this.position.y += this.velocity.y * VELOCITY * .6 * time.secondsPassed
@@ -116,7 +137,7 @@ class Player extends Entity {
     this.updatePosition(time)
     this.velocity = this.getMovement()[1]
     this.bombPlacer.handleBombPlacement(time)
-    this.bombPlacer.resetLastBombCell()
+    this.checkCellUnderneath()
   }
 
   draw(ctx) {
