@@ -1,11 +1,17 @@
+import {
+  HALF_TILE_SIZE,
+  TILE_SIZE,
+  cornerDirections,
+  direction,
+  movementOrientation,
+  collisionTile,
+  WALK_SPEED,
+} from '../constants.js';
 import BombPlacer from '../components/BombPlacer.js';
 import { addComponent } from '../components/utils.js';
-import { HALF_TILE_SIZE, TILE_SIZE, cornerDirections, direction, movementOrientation, collisionTile } from '../constants.js';
 import * as controlHandler from '../core/inputHandler.js';
 import { collisionMap } from '../levelsData.js';
 import Entity from './Entity.js';
-
-const VELOCITY = 120
 
 class Player extends Entity {
   constructor(position, addBomb) {
@@ -47,16 +53,36 @@ class Player extends Entity {
     }
   }
 
-  isBarrierTile(tileValue) { return Object.values(collisionTile.BARRIER).includes(tileValue) }
+  correctPositionAgainstWall(collisionCoords, playerDirection) {
+    const { x, y } = movementOrientation[playerDirection]
+
+    if (y !== 0) {
+      this.position.y = playerDirection === direction.UP
+        ? (collisionCoords[0].row + 1) * TILE_SIZE + HALF_TILE_SIZE
+        : (collisionCoords[0].row - 1) * TILE_SIZE + HALF_TILE_SIZE
+    }
+
+    if (x !== 0) {
+      this.position.x = playerDirection === direction.LEFT
+        ? (collisionCoords[0].col + 1) * TILE_SIZE + HALF_TILE_SIZE
+        : (collisionCoords[0].col - 1) * TILE_SIZE + HALF_TILE_SIZE
+    }
+  }
+
+  isBarrierTile(tileValue) {
+    return Object.values(collisionTile.BARRIER).includes(tileValue)
+  }
 
   getCollisionTile(collisionCoords) {
+    const collidingTile = collisionMap[collisionCoords.row][collisionCoords.col]
     const lastBombCell = this.bombPlacer.lastBombCell
 
-    if (lastBombCell && collisionCoords.row === lastBombCell.row && collisionCoords.col === lastBombCell.col) {
+    if (collidingTile !== collisionTile.FLAME && lastBombCell &&
+        collisionCoords.row === lastBombCell.row && collisionCoords.col === lastBombCell.col) {
       return collisionTile.EMPTY
     }
 
-    return collisionMap[collisionCoords.row][collisionCoords.col]
+    return collidingTile
   }
 
   coordsShouldBlockMovement(collisionCoords, collisionTiles) {
@@ -65,7 +91,7 @@ class Player extends Entity {
         collisionCoords[0].col === collisionCoords[1].col
 
     return (collisionCoordsMatch && this.isBarrierTile(collisionTiles[0])) ||
-        (this.isBarrierTile() && collisionTiles[1] >= collisionTile.BARRIER.WALL)
+        (this.isBarrierTile(collisionTiles[0]) && this.isBarrierTile(collisionTiles[1]))
   }
 
   checkWallCollision(playerDirection) {
@@ -76,6 +102,8 @@ class Player extends Entity {
     ]
 
     if (this.coordsShouldBlockMovement(collisionCoords, collisionTiles)) {
+      this.correctPositionAgainstWall(collisionCoords, playerDirection)
+
       return [direction.DOWN, { x: 0, y: 0 }]
     }
 
@@ -129,8 +157,8 @@ class Player extends Entity {
   }
 
   updatePosition(time) {
-		this.position.x += this.velocity.x * VELOCITY * .6 * time.secondsPassed
-		this.position.y += this.velocity.y * VELOCITY * .6 * time.secondsPassed
+    this.position.x += this.velocity.x * WALK_SPEED * 1.2 * time.secondsPassed
+		this.position.y += this.velocity.y * WALK_SPEED * 1.2 * time.secondsPassed
 	}
 
   update(time) {
