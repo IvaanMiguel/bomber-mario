@@ -53,19 +53,49 @@ class Player extends Entity {
     }
   }
 
+  allignBetweenWalls(collisionCoords, alternativeDirection, playerDirection, time) {
+    const { x, y } = movementOrientation[alternativeDirection]
+    
+    // Se presiona arriba o abajo, lo que corregirá la posición entre dos paredes derechas (x = 1) o izquierdas (x = -1).
+    if (x !== 0) {
+      const nextCollisionCol = Math.floor((this.position.x + this.getNextPosition(x, time) + HALF_TILE_SIZE * x) / TILE_SIZE)
+      const nextCellToCollide = collisionMap[collisionCoords.row][nextCollisionCol]
+
+      if (nextCellToCollide === collisionTile.BARRIER.WALL) {
+        this.position.x = Math.floor((nextCollisionCol - x) * TILE_SIZE + HALF_TILE_SIZE)
+  
+        return [alternativeDirection, movementOrientation[playerDirection]]
+      }
+    }
+
+    // Se presiona izquierda o derecha, lo que corregirá la posición entre dos paredes inferiores (y = 1) o superiores (y = -1).
+    if (y !== 0) {
+      const nextCollisionRow = Math.floor((this.position.y + this.getNextPosition(y, time) + HALF_TILE_SIZE * y) / TILE_SIZE)
+      const nextCellToCollide = collisionMap[nextCollisionRow][collisionCoords.col]
+
+      if (nextCellToCollide === collisionTile.BARRIER.WALL) {
+        this.position.y = Math.floor((nextCollisionRow - y) * TILE_SIZE + HALF_TILE_SIZE)
+  
+        return [alternativeDirection, movementOrientation[playerDirection]]
+      }
+    }
+
+    return [alternativeDirection, movementOrientation[alternativeDirection]]
+  }
+
   correctPositionAgainstWall(collisionCoords, playerDirection) {
     const { x, y } = movementOrientation[playerDirection]
 
     if (y !== 0) {
       this.position.y = playerDirection === direction.UP
-        ? (collisionCoords[0].row + 1) * TILE_SIZE + HALF_TILE_SIZE
-        : (collisionCoords[0].row - 1) * TILE_SIZE + HALF_TILE_SIZE
+        ? (collisionCoords[0].row - y) * TILE_SIZE + HALF_TILE_SIZE
+        : (collisionCoords[0].row - y) * TILE_SIZE + HALF_TILE_SIZE
     }
 
     if (x !== 0) {
       this.position.x = playerDirection === direction.LEFT
-        ? (collisionCoords[0].col + 1) * TILE_SIZE + HALF_TILE_SIZE
-        : (collisionCoords[0].col - 1) * TILE_SIZE + HALF_TILE_SIZE
+        ? (collisionCoords[0].col - x) * TILE_SIZE + HALF_TILE_SIZE
+        : (collisionCoords[0].col - x) * TILE_SIZE + HALF_TILE_SIZE
     }
   }
 
@@ -94,7 +124,7 @@ class Player extends Entity {
         (this.isBarrierTile(collisionTiles[0]) && this.isBarrierTile(collisionTiles[1]))
   }
 
-  checkWallCollision(playerDirection) {
+  checkWallCollision(playerDirection, time) {
     const collisionCoords = this.getCollisionCoords(playerDirection)
     const collisionTiles = [
       this.getCollisionTile(collisionCoords[0]),
@@ -110,26 +140,26 @@ class Player extends Entity {
     const alternativeDirections = cornerDirections[playerDirection]
 
     if (this.isBarrierTile(collisionTiles[0])) {
-      return [alternativeDirections[0], movementOrientation[alternativeDirections[0]]]
+      return this.allignBetweenWalls(collisionCoords[0], alternativeDirections[0], playerDirection, time)
     }
     if (this.isBarrierTile(collisionTiles[1])) {
-      return [alternativeDirections[1], movementOrientation[alternativeDirections[1]]]
+      return this.allignBetweenWalls(collisionCoords[1], alternativeDirections[1], playerDirection, time)
     }
 
     return [playerDirection, movementOrientation[playerDirection]]
   }
 
-  getMovement(){
+  getMovement(time){
     const controlDown = controlHandler.getLastControlDown()
 
     if (controlHandler.isUp(controlDown)) {
-      return this.checkWallCollision(direction.UP)
+      return this.checkWallCollision(direction.UP, time)
     } else if (controlHandler.isLeft(controlDown)) {
-      return this.checkWallCollision(direction.LEFT)
+      return this.checkWallCollision(direction.LEFT, time)
     } else if (controlHandler.isDown(controlDown)) {
-      return this.checkWallCollision(direction.DOWN)
+      return this.checkWallCollision(direction.DOWN, time)
     } else if (controlHandler.isRight(controlDown)) {
-      return this.checkWallCollision(direction.RIGHT)
+      return this.checkWallCollision(direction.RIGHT, time)
     }
 
     return [direction.DOWN, { x: 0, y: 0 }]
@@ -156,14 +186,18 @@ class Player extends Entity {
     }
   }
 
+  getNextPosition(velocity, time) {
+    return velocity * WALK_SPEED * 1.2 * time.secondsPassed
+  }
+
   updatePosition(time) {
-    this.position.x += this.velocity.x * WALK_SPEED * 1.2 * time.secondsPassed
-		this.position.y += this.velocity.y * WALK_SPEED * 1.2 * time.secondsPassed
+    this.position.x += this.getNextPosition(this.velocity.x, time)
+		this.position.y += this.getNextPosition(this.velocity.y, time)
 	}
 
   update(time) {
     this.updatePosition(time)
-    this.velocity = this.getMovement()[1]
+    this.velocity = this.getMovement(time)[1]
     this.bombPlacer.handleBombPlacement(time)
     this.checkCellUnderneath()
   }
