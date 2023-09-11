@@ -28,6 +28,8 @@ export const movementOrientation = {
   [direction.RIGHT]: { x: 1, y: 0 }
 }
 
+export const WALK_SPEED = 60
+
 export const flameDirections = [[0, -1], [-1, 0], [0, 1], [1, 0]]
 
 export const tile = {
@@ -51,7 +53,7 @@ export const startTiles = [[1, 1], [1, 2], [2, 1]]
 export const BOMB_TIMER = 2 * 1000
 export const EXPLOSION_TIMER = .5 * 1000
 
-export const MAX_TOTAL_BLOCKS = 50
+export const MAX_TOTAL_BLOCKS = 70
 
 export const TILE_SIZE = 16
 export const HALF_TILE_SIZE = TILE_SIZE / 2
