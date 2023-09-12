@@ -5,8 +5,7 @@ import {
   direction,
   movementOrientation,
   collisionTile,
-  WALK_SPEED,
-  tile,
+  WALK_SPEED
 } from '../constants.js';
 import BombPlacer from '../components/BombPlacer.js';
 import { addComponent } from '../components/utils.js';
@@ -14,7 +13,7 @@ import * as controlHandler from '../core/inputHandler.js';
 import Entity from './Entity.js';
 
 class Player extends Entity {
-  constructor(position, levelMap, addBomb) {
+  constructor(position, levelMap, addBomb, goalReached) {
     super({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
@@ -22,11 +21,12 @@ class Player extends Entity {
 
     addComponent(this, new BombPlacer(this))
 
-    this.width = 16
-    this.height = 16
+    this.width = TILE_SIZE
+    this.height = TILE_SIZE
 
     this.levelMap = levelMap
     this.addBomb = addBomb
+    this.goalReached = goalReached
   }
 
   getCollisionCoords(playerDirection) {
@@ -169,10 +169,9 @@ class Player extends Entity {
   checkGoalReached(playerCell) {
     const goalCoords = this.levelMap.goalCoords
 
-    if (playerCell.row === goalCoords.row && playerCell.col === goalCoords.col) {
-      this.resetPosition()
-      this.levelMap.regenMap()
-    }
+    if (playerCell.row !== goalCoords.row || playerCell.col !== goalCoords.col) return
+
+    this.goalReached()
   }
 
   checkCellUnderneath() {
@@ -196,6 +195,11 @@ class Player extends Entity {
       x: TILE_SIZE + HALF_TILE_SIZE,
       y: TILE_SIZE + HALF_TILE_SIZE
     }
+  }
+
+  restartPlayer() {
+    this.resetPosition()
+    this.bombPlacer.bombAmount = 1
   }
 
   getNextPosition(velocity, time) {
