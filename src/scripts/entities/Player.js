@@ -6,15 +6,15 @@ import {
   movementOrientation,
   collisionTile,
   WALK_SPEED,
+  tile,
 } from '../constants.js';
 import BombPlacer from '../components/BombPlacer.js';
 import { addComponent } from '../components/utils.js';
 import * as controlHandler from '../core/inputHandler.js';
-import { collisionMap } from '../levelsData.js';
 import Entity from './Entity.js';
 
 class Player extends Entity {
-  constructor(position, addBomb) {
+  constructor(position, levelMap, addBomb) {
     super({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
@@ -25,6 +25,7 @@ class Player extends Entity {
     this.width = 16
     this.height = 16
 
+    this.levelMap = levelMap
     this.addBomb = addBomb
   }
 
@@ -59,7 +60,7 @@ class Player extends Entity {
     // Se presiona arriba o abajo, lo que corregirá la posición entre dos paredes derechas (x = 1) o izquierdas (x = -1).
     if (x !== 0) {
       const nextCollisionCol = Math.floor((this.position.x + this.getNextPosition(x, time) + HALF_TILE_SIZE * x) / TILE_SIZE)
-      const nextCellToCollide = collisionMap[collisionCoords.row][nextCollisionCol]
+      const nextCellToCollide = this.levelMap.collisionMap[collisionCoords.row][nextCollisionCol]
 
       if (nextCellToCollide === collisionTile.BARRIER.WALL) {
         this.position.x = Math.floor((nextCollisionCol - x) * TILE_SIZE + HALF_TILE_SIZE)
@@ -71,7 +72,7 @@ class Player extends Entity {
     // Se presiona izquierda o derecha, lo que corregirá la posición entre dos paredes inferiores (y = 1) o superiores (y = -1).
     if (y !== 0) {
       const nextCollisionRow = Math.floor((this.position.y + this.getNextPosition(y, time) + HALF_TILE_SIZE * y) / TILE_SIZE)
-      const nextCellToCollide = collisionMap[nextCollisionRow][collisionCoords.col]
+      const nextCellToCollide = this.levelMap.collisionMap[nextCollisionRow][collisionCoords.col]
 
       if (nextCellToCollide === collisionTile.BARRIER.WALL) {
         this.position.y = Math.floor((nextCollisionRow - y) * TILE_SIZE + HALF_TILE_SIZE)
@@ -104,7 +105,7 @@ class Player extends Entity {
   }
 
   getCollisionTile(collisionCoords) {
-    const collidingTile = collisionMap[collisionCoords.row][collisionCoords.col]
+    const collidingTile = this.levelMap.collisionMap[collisionCoords.row][collisionCoords.col]
     const lastBombCell = this.bombPlacer.lastBombCell
 
     if (collidingTile !== collisionTile.FLAME && lastBombCell &&
@@ -165,6 +166,15 @@ class Player extends Entity {
     return [direction.DOWN, { x: 0, y: 0 }]
   }
 
+  checkGoalReached(playerCell) {
+    const goalCoords = this.levelMap.goalCoords
+
+    if (playerCell.row === goalCoords.row && playerCell.col === goalCoords.col) {
+      this.resetPosition()
+      this.levelMap.regenMap()
+    }
+  }
+
   checkCellUnderneath() {
     const playerCell = {
       row: Math.floor(this.position.y / TILE_SIZE),
@@ -177,6 +187,8 @@ class Player extends Entity {
     if (this.getCollisionTile(playerCell) === collisionTile.FLAME) {
       this.resetPosition()
     }
+
+    this.checkGoalReached(playerCell)
   }
 
   resetPosition() {
