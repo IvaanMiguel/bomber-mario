@@ -1,5 +1,7 @@
 import {
   MAX_TOTAL_BLOCKS,
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
   TILE_SIZE,
   collisionTile,
   startTiles,
@@ -11,53 +13,73 @@ import { collisionMap, tileMap } from '../levelsData.js'
 const tileColor = {
   10: 'darkgray',
   11: 'darkgreen',
-  12: 'lightgray'
+  12: 'lightgray',
+  13: 'purple'
 }
 
 class LevelMap extends Entity {
+  tileMap = structuredClone(tileMap)
+  collisionMap = structuredClone(collisionMap)
+  goalCoords = { row: 0, col: 0 }
+  blocks = []
+  
   constructor() {
     super({ x: 0, y: 0 })
     
-    this.tileMap = tileMap
-    this.mapImage = new OffscreenCanvas(1024, 1024)
+    this.mapImage = new OffscreenCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     this.ctx = this.mapImage.getContext('2d')
 
+    this.buildMap()
+  }
+
+  regenMap() {
+    this.blocks = []
+    this.tileMap = structuredClone(tileMap)
+    this.collisionMap = structuredClone(collisionMap)
+
+    this.ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     this.buildMap()
   }
 
   updateMapAt(cell, tileMap, collisionTile) {
     this.ctx.fillStyle = tileColor[tileMap]
     this.ctx.fillRect(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-    this.tileMap [cell.row][cell.col] = tileMap
-    collisionMap[cell.row][cell.col] = collisionTile
+    this.tileMap[cell.row][cell.col] = tileMap
+    this.collisionMap[cell.row][cell.col] = collisionTile
   }
 
-  addBlockTileAt(cell) {
+  addBlockTileAt(cell, tileMap, collidingTile) {
     const cellAtStartZone = startTiles.some(([startRow, startCol]) => {
       return startRow === cell.row && startCol === cell.col
     })
 
-    if (cellAtStartZone || collisionMap[cell.row][cell.col] !== collisionTile.EMPTY) {
+    if (cellAtStartZone || this.collisionMap[cell.row][cell.col] !== collisionTile.EMPTY) {
       return false
     }
     
-    this.updateMapAt(cell, tile.BLOCK, collisionTile.BARRIER.BLOCK)
+    this.updateMapAt(cell, tileMap, collidingTile)
 
     return true
   }
 
   addBlocks() {
-    const blocks = []
-
-    // this.ctx.fillStyle = 'lightgray'
-    while (blocks.length < MAX_TOTAL_BLOCKS) {
+    while (this.blocks.length < MAX_TOTAL_BLOCKS) {
       const cell = {
-        row: 1 + Math.floor(Math.random() * (tileMap.length - 2)),
-        col: 1 + Math.floor(Math.random() * (tileMap[0].length - 2))
+        row: 1 + Math.floor(Math.random() * (this.tileMap.length - 2)),
+        col: 1 + Math.floor(Math.random() * (this.tileMap[0].length - 2))
       }
 
-      if (this.addBlockTileAt(cell)) blocks.push(cell)
+      if (!this.addBlockTileAt(cell, tile.BLOCK, collisionTile.BARRIER.BLOCK)) continue
+
+      this.blocks.push(cell)
     }
+  }
+
+  addGoal() {
+    const index = Math.floor(Math.random() * this.blocks.length)
+    this.goalCoords = this.blocks[index]
+    
+    this.tileMap[this.goalCoords.row][this.goalCoords.col] = tile.GOAL
   }
 
   buildMap() {
@@ -71,10 +93,20 @@ class LevelMap extends Entity {
     }
 
     this.addBlocks()
+    this.addGoal()
+  }
+
+  drawGoal(ctx) {
+    ctx.fillStyle = tileColor[13]
+    ctx.fillRect(this.goalCoords.col * TILE_SIZE, this.goalCoords.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   draw(ctx) {
     ctx.drawImage(this.mapImage, this.position.x, this.position.y)
+
+    if (this.collisionMap[this.goalCoords.row][this.goalCoords.col] === collisionTile.BARRIER.BLOCK) return
+
+    this.drawGoal(ctx)
   }
 }
 
