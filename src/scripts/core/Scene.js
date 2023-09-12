@@ -11,7 +11,7 @@ class Scene {
 
     this.levelMap = new LevelMap()
     this.bombsSystem = new BombsSystem(this.levelMap)
-    this.player = new Player({ row: 1, col: 1 }, this.bombsSystem.add)
+    this.player = new Player({ row: 1, col: 1 }, this.levelMap, this.bombsSystem.add)
   }
 
   draw() {
