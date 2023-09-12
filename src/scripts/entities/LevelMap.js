@@ -3,22 +3,21 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
   TILE_SIZE,
-  collisionTile,
+  CollisionTile,
   startTiles,
-  tile,
-  tileCollisionMapping
+  Tile,
+  tileCollisionMapping,
+  BACKGROUND_COLOR
 } from '../constants.js'
 import Entity from './Entity.js'
 import TileMaps from '../levelsData.js'
 
 const tileColor = {
-  10: 'darkgray',
-  11: 'darkgreen',
-  12: 'lightgray',
   13: 'purple'
 }
 
 class LevelMap extends Entity {
+  image = document.getElementById('tiles')
   goalCoords = { row: 0, col: 0 }
   blocks = []
   lastMapIndex = null
@@ -61,8 +60,6 @@ class LevelMap extends Entity {
 
     this.lastMapIndex = mapIndex
 
-    console.log(TileMaps[mapIndex]);
-
     return TileMaps[mapIndex]
   }
 
@@ -76,9 +73,18 @@ class LevelMap extends Entity {
     this.buildMap()
   }
 
+  drawTileMapAt(tile, rowIndex, colIndex) {
+    this.ctx.drawImage(
+      this.image,
+      tile * TILE_SIZE, 0,
+      TILE_SIZE, TILE_SIZE,
+      TILE_SIZE * colIndex, TILE_SIZE * rowIndex,
+      TILE_SIZE, TILE_SIZE
+    )
+  }
+
   updateMapAt(cell, tileMap, collisionTile) {
-    this.ctx.fillStyle = tileColor[tileMap]
-    this.ctx.fillRect(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    this.drawTileMapAt(tileMap, cell.row, cell.col)
     this.tileMap[cell.row][cell.col] = tileMap
     this.collisionMap[cell.row][cell.col] = collisionTile
   }
@@ -88,7 +94,7 @@ class LevelMap extends Entity {
       return startRow === cell.row && startCol === cell.col
     })
 
-    if (cellAtStartZone || this.collisionMap[cell.row][cell.col] !== collisionTile.EMPTY) {
+    if (cellAtStartZone || this.collisionMap[cell.row][cell.col] !== CollisionTile.EMPTY) {
       return false
     }
     
@@ -104,7 +110,9 @@ class LevelMap extends Entity {
         col: 1 + Math.floor(Math.random() * (this.tileMap[0].length - 2))
       }
 
-      if (!this.addBlockTileAt(cell, tile.BLOCK, collisionTile.BARRIER.BLOCK)) continue
+      if (!this.addBlockTileAt(cell, Tile.BLOCK, CollisionTile.BARRIER.BLOCK)) continue
+
+      this.drawTileMapAt(Tile.BLOCK, cell.row, cell.col)
 
       this.blocks.push(cell)
     }
@@ -114,21 +122,28 @@ class LevelMap extends Entity {
     const index = Math.floor(Math.random() * this.blocks.length)
     this.goalCoords = this.blocks[index]
     
-    this.tileMap[this.goalCoords.row][this.goalCoords.col] = tile.GOAL
+    this.tileMap[this.goalCoords.row][this.goalCoords.col] = Tile.GOAL
+  }
+
+  strokeCorner() {
+    this.ctx.strokeStyle = BACKGROUND_COLOR
+    this.ctx.lineWidth = 2
+    this.ctx.strokeRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
   }
 
   buildMap() {
     for (let row = 0; row < this.tileMap.length; row++) {
       for (let col = 0; col < this.tileMap[row].length; col++) {
         const tile = this.tileMap[row][col]
-
-        this.ctx.fillStyle = tileColor[tile]
-        this.ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+        this.drawTileMapAt(Tile.FLOOR, row, col)
+        this.drawTileMapAt(tile, row, col)
       }
     }
 
     this.addBlocks()
     this.addGoal()
+
+    this.strokeCorner()
   }
 
   drawGoal(ctx) {
@@ -139,7 +154,7 @@ class LevelMap extends Entity {
   draw(ctx) {
     ctx.drawImage(this.mapImage, this.position.x, this.position.y)
 
-    if (this.collisionMap[this.goalCoords.row][this.goalCoords.col] === collisionTile.BARRIER.BLOCK) return
+    if (this.collisionMap[this.goalCoords.row][this.goalCoords.col] === CollisionTile.BARRIER.BLOCK) return
 
     this.drawGoal(ctx)
   }
