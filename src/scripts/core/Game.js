@@ -4,12 +4,13 @@ import { addKeyEventsListeners } from './inputHandler.js'
 
 class Game {
   canvas = document.getElementById(CANVAS_ID)
-  scene = new Scene(canvas)
   frameTime = { previous: 0, secondsPassed: 0 }
 
   constructor() {
     this.canvas.width = SCREEN_WIDTH
     this.canvas.height = SCREEN_HEIGHT
+
+    this.scene = new Scene(canvas, this.frameTime)
   }
 
   update = timestamp => {
