@@ -9,6 +9,10 @@ class BombsSystem {
     this.levelMap = levelMap
   }
 
+  resetBombs() {
+    this.bombs = []
+  }
+
   checkFlamesCollision(cell) {
     if (this.levelMap.collisionMap[cell.row][cell.col] === collisionTile.EMPTY) return
 
