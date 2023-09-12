@@ -4,7 +4,7 @@ import LevelMap from '../entities/LevelMap.js'
 import BombsSystem from './BombsSystem.js'
 
 class Scene {
-  constructor(canvas) {
+  constructor(canvas, time) {
     this.canvas = canvas
     this.ctx = this.canvas.getContext('2d')
     this.ctx.imageSmoothingEnabled = false;
@@ -15,7 +15,8 @@ class Scene {
       { row: 1, col: 1 },
       this.levelMap,
       this.bombsSystem.add,
-      this.onGoalReached
+      this.onGoalReached,
+      time
     )
   }
 
