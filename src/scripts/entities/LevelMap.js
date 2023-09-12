@@ -5,10 +5,11 @@ import {
   TILE_SIZE,
   collisionTile,
   startTiles,
-  tile
+  tile,
+  tileCollisionMapping
 } from '../constants.js'
 import Entity from './Entity.js'
-import { collisionMap, tileMap } from '../levelsData.js'
+import TileMaps from '../levelsData.js'
 
 const tileColor = {
   10: 'darkgray',
@@ -18,10 +19,9 @@ const tileColor = {
 }
 
 class LevelMap extends Entity {
-  tileMap = structuredClone(tileMap)
-  collisionMap = structuredClone(collisionMap)
   goalCoords = { row: 0, col: 0 }
   blocks = []
+  lastMapIndex = null
   
   constructor() {
     super({ x: 0, y: 0 })
@@ -29,13 +29,48 @@ class LevelMap extends Entity {
     this.mapImage = new OffscreenCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     this.ctx = this.mapImage.getContext('2d')
 
+    this.tileMap = this.getRandomTileMap()
+    this.collisionMap = this.createCollisionMap(this.tileMap)
+
     this.buildMap()
+  }
+
+  createCollisionMap(tileMap) {
+    const collisionMap = []
+
+    for (let row = 0; row < tileMap.length; row++) {
+      const rowCollisions = []
+
+      for (let col = 0; col < tileMap[0].length; col++) {
+        const tile = tileMap[row][col]
+        rowCollisions.push(tileCollisionMapping[tile])
+      }
+
+      collisionMap.push(rowCollisions)
+    }
+
+    return collisionMap
+  }
+
+  getRandomTileMap() {
+    let mapIndex = null
+
+    do {
+      mapIndex = Math.floor(Math.random() * TileMaps.length)
+    } while (mapIndex === this.lastMapIndex)
+
+    this.lastMapIndex = mapIndex
+
+    console.log(TileMaps[mapIndex]);
+
+    return TileMaps[mapIndex]
   }
 
   regenMap() {
     this.blocks = []
-    this.tileMap = structuredClone(tileMap)
-    this.collisionMap = structuredClone(collisionMap)
+
+    this.tileMap = this.getRandomTileMap()
+    this.collisionMap = this.createCollisionMap(this.tileMap)
 
     this.ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     this.buildMap()
