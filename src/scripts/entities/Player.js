@@ -2,10 +2,13 @@ import {
   HALF_TILE_SIZE,
   TILE_SIZE,
   cornerDirections,
-  direction,
+  Direction,
   movementOrientation,
-  collisionTile,
-  WALK_SPEED
+  CollisionTile,
+  WALK_SPEED,
+  PlayerAnimation,
+  PlayerState,
+  FRAME_TIME
 } from '../constants.js';
 import BombPlacer from '../components/BombPlacer.js';
 import { addComponent } from '../components/utils.js';
@@ -13,7 +16,10 @@ import * as controlHandler from '../core/inputHandler.js';
 import Entity from './Entity.js';
 
 class Player extends Entity {
-  constructor(position, levelMap, addBomb, goalReached) {
+  image = document.getElementById('mario')
+  animation = PlayerAnimation[Direction.RIGHT]
+
+  constructor(position, levelMap, addBomb, goalReached, time) {
     super({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
@@ -27,26 +33,83 @@ class Player extends Entity {
     this.levelMap = levelMap
     this.addBomb = addBomb
     this.goalReached = goalReached
+
+    this.states = {
+      [PlayerState.IDLE]: {
+        type: PlayerState.IDLE,
+        init: this.initIdleState,
+        update: this.handleIdleState
+      },
+      [PlayerState.MOVING]: {
+        type: PlayerState.MOVING,
+        init: this.initMovingState,
+        update: this.handleMovingState
+      }
+    }
+
+    this.changeState(PlayerState.IDLE, time)
+  }
+
+  changeState(newState, time) {
+    this.currentState = this.states[newState]
+    this.animationFrame = 0
+    this.animationTimer = time.previous + this.animation[this.animationFrame].timer * FRAME_TIME
+
+    this.currentState.init()
+  }
+
+  handleMoving(time) {
+    const [playerDirection, velocity] = this.getMovement(time)
+
+    if (playerDirection === Direction.RIGHT || playerDirection === Direction.LEFT) {
+      this.animation = PlayerAnimation[playerDirection]
+    }
+
+    return velocity
+  }
+
+  initIdleState = () => {
+    this.velocity = { x: 0, y: 0 }
+  }
+
+  handleIdleState = (time) => {
+    const velocity = this.handleMoving(time)
+
+    if (velocity.x === 0 && velocity.y === 0) return
+
+    this.changeState(PlayerState.MOVING, time)
+  }
+
+  initMovingState = () => {
+    this.animationFrame = 1
+  }
+
+  handleMovingState = (time) => {
+    this.velocity = this.handleMoving(time)
+
+    if (this.velocity.x !== 0 || this.velocity.y !== 0) return
+
+    this.changeState(PlayerState.IDLE, time)
   }
 
   getCollisionCoords(playerDirection) {
     switch(playerDirection) {
-      case direction.UP:
+      case Direction.UP:
         return [
           { row: Math.floor((this.position.y - 9) / TILE_SIZE), col: Math.floor((this.position.x - 8) / TILE_SIZE) },
           { row: Math.floor((this.position.y - 9) / TILE_SIZE), col: Math.floor((this.position.x + 7) / TILE_SIZE) }
         ]
-      case direction.LEFT:
+      case Direction.LEFT:
         return [
           { row: Math.floor((this.position.y - 8) / TILE_SIZE), col: Math.floor((this.position.x - 9) / TILE_SIZE) },
           { row: Math.floor((this.position.y + 7) / TILE_SIZE), col: Math.floor((this.position.x - 9) / TILE_SIZE) }
         ]
-      case direction.DOWN:
+      case Direction.DOWN:
         return [
           { row: Math.floor((this.position.y + 8) / TILE_SIZE), col: Math.floor((this.position.x - 8) / TILE_SIZE) },
           { row: Math.floor((this.position.y + 8) / TILE_SIZE), col: Math.floor((this.position.x + 7) / TILE_SIZE) }
         ]
-      case direction.RIGHT:
+      case Direction.RIGHT:
         return [
           { row: Math.floor((this.position.y - 8) / TILE_SIZE), col: Math.floor((this.position.x + 8) / TILE_SIZE) },
           { row: Math.floor((this.position.y + 7) / TILE_SIZE), col: Math.floor((this.position.x + 8) / TILE_SIZE) }
@@ -62,7 +125,7 @@ class Player extends Entity {
       const nextCollisionCol = Math.floor((this.position.x + this.getNextPosition(x, time) + HALF_TILE_SIZE * x) / TILE_SIZE)
       const nextCellToCollide = this.levelMap.collisionMap[collisionCoords.row][nextCollisionCol]
 
-      if (nextCellToCollide === collisionTile.BARRIER.WALL) {
+      if (nextCellToCollide === CollisionTile.BARRIER.WALL) {
         this.position.x = Math.floor((nextCollisionCol - x) * TILE_SIZE + HALF_TILE_SIZE)
   
         return [alternativeDirection, movementOrientation[playerDirection]]
@@ -74,7 +137,7 @@ class Player extends Entity {
       const nextCollisionRow = Math.floor((this.position.y + this.getNextPosition(y, time) + HALF_TILE_SIZE * y) / TILE_SIZE)
       const nextCellToCollide = this.levelMap.collisionMap[nextCollisionRow][collisionCoords.col]
 
-      if (nextCellToCollide === collisionTile.BARRIER.WALL) {
+      if (nextCellToCollide === CollisionTile.BARRIER.WALL) {
         this.position.y = Math.floor((nextCollisionRow - y) * TILE_SIZE + HALF_TILE_SIZE)
   
         return [alternativeDirection, movementOrientation[playerDirection]]
@@ -88,29 +151,29 @@ class Player extends Entity {
     const { x, y } = movementOrientation[playerDirection]
 
     if (y !== 0) {
-      this.position.y = playerDirection === direction.UP
+      this.position.y = playerDirection === Direction.UP
         ? (collisionCoords[0].row - y) * TILE_SIZE + HALF_TILE_SIZE
         : (collisionCoords[0].row - y) * TILE_SIZE + HALF_TILE_SIZE
     }
 
     if (x !== 0) {
-      this.position.x = playerDirection === direction.LEFT
+      this.position.x = playerDirection === Direction.LEFT
         ? (collisionCoords[0].col - x) * TILE_SIZE + HALF_TILE_SIZE
         : (collisionCoords[0].col - x) * TILE_SIZE + HALF_TILE_SIZE
     }
   }
 
   isBarrierTile(tileValue) {
-    return Object.values(collisionTile.BARRIER).includes(tileValue)
+    return Object.values(CollisionTile.BARRIER).includes(tileValue)
   }
 
   getCollisionTile(collisionCoords) {
     const collidingTile = this.levelMap.collisionMap[collisionCoords.row][collisionCoords.col]
     const lastBombCell = this.bombPlacer.lastBombCell
 
-    if (collidingTile !== collisionTile.FLAME && lastBombCell &&
+    if (collidingTile !== CollisionTile.FLAME && lastBombCell &&
         collisionCoords.row === lastBombCell.row && collisionCoords.col === lastBombCell.col) {
-      return collisionTile.EMPTY
+      return CollisionTile.EMPTY
     }
 
     return collidingTile
@@ -135,7 +198,7 @@ class Player extends Entity {
     if (this.coordsShouldBlockMovement(collisionCoords, collisionTiles)) {
       this.correctPositionAgainstWall(collisionCoords, playerDirection)
 
-      return [direction.DOWN, { x: 0, y: 0 }]
+      return [playerDirection, { x: 0, y: 0 }]
     }
 
     const alternativeDirections = cornerDirections[playerDirection]
@@ -154,16 +217,16 @@ class Player extends Entity {
     const controlDown = controlHandler.getLastControlDown()
 
     if (controlHandler.isUp(controlDown)) {
-      return this.checkWallCollision(direction.UP, time)
+      return this.checkWallCollision(Direction.UP, time)
     } else if (controlHandler.isLeft(controlDown)) {
-      return this.checkWallCollision(direction.LEFT, time)
+      return this.checkWallCollision(Direction.LEFT, time)
     } else if (controlHandler.isDown(controlDown)) {
-      return this.checkWallCollision(direction.DOWN, time)
+      return this.checkWallCollision(Direction.DOWN, time)
     } else if (controlHandler.isRight(controlDown)) {
-      return this.checkWallCollision(direction.RIGHT, time)
+      return this.checkWallCollision(Direction.RIGHT, time)
     }
 
-    return [direction.DOWN, { x: 0, y: 0 }]
+    return [Direction.DOWN, { x: 0, y: 0 }]
   }
 
   checkGoalReached(playerCell) {
@@ -183,7 +246,7 @@ class Player extends Entity {
     this.bombPlacer.resetLastBombCell(playerCell)
    
     // Para revisar si se colisiona con una llama.
-    if (this.getCollisionTile(playerCell) === collisionTile.FLAME) {
+    if (this.getCollisionTile(playerCell) === CollisionTile.FLAME) {
       this.resetPosition()
     }
 
@@ -211,20 +274,33 @@ class Player extends Entity {
 		this.position.y += this.getNextPosition(this.velocity.y, time)
 	}
 
+  updateAnimation(time) {
+    if (time.previous < this.animationTimer || this.currentState.type === PlayerState.IDLE) return
+
+    this.animationFrame += 1
+    if (this.animationFrame >= this.animation.length) this.animationFrame = 0
+
+    this.animationTimer = time.previous + (this.animation[this.animationFrame].timer * FRAME_TIME)
+  }
+
   update(time) {
     this.updatePosition(time)
-    this.velocity = this.getMovement(time)[1]
+    this.updateAnimation(time)
+    this.currentState.update(time)
     this.bombPlacer.handleBombPlacement(time)
     this.checkCellUnderneath()
   }
 
   draw(ctx) {
-    ctx.fillStyle = 'black'
-    ctx.fillRect(
-      this.position.x - HALF_TILE_SIZE,
-      this.position.y - HALF_TILE_SIZE,
-      this.width,
-      this.height
+    const { originX, originY, width, height } = this.animation[this.animationFrame]
+
+    ctx.drawImage(
+      this.image,
+      originX, originY,
+      width, height,
+      Math.floor(this.position.x - HALF_TILE_SIZE) + (TILE_SIZE - width) / 2,
+      Math.floor(this.position.y - HALF_TILE_SIZE),
+      width, TILE_SIZE
     )
   }
 }
