@@ -4,7 +4,7 @@ import {
   SCREEN_WIDTH,
   TILE_SIZE,
   CollisionTile,
-  startTiles,
+  StartTile,
   Tile,
   tileCollisionMapping,
   BACKGROUND_COLOR
@@ -90,7 +90,7 @@ class LevelMap extends Entity {
   }
 
   addBlockTileAt(cell, tileMap, collidingTile) {
-    const cellAtStartZone = startTiles.some(([startRow, startCol]) => {
+    const cellAtStartZone = StartTile.some(([startRow, startCol]) => {
       return startRow === cell.row && startCol === cell.col
     })
 

@@ -1,4 +1,4 @@
-import { collisionTile, flameDirections, tile } from '../constants.js'
+import { CollisionTile, FlameDirection, Tile } from '../constants.js'
 import Bomb from '../entities/Bomb.js'
 import BombExplosion from '../entities/BombExplosion.js'
 
@@ -14,10 +14,10 @@ class BombsSystem {
   }
 
   checkFlamesCollision(cell) {
-    if (this.levelMap.collisionMap[cell.row][cell.col] === collisionTile.EMPTY) return
+    if (this.levelMap.collisionMap[cell.row][cell.col] === CollisionTile.EMPTY) return
 
-    if (this.levelMap.collisionMap[cell.row][cell.col] === collisionTile.BARRIER.BLOCK) {
-      this.levelMap.updateMapAt(cell, tile.FLOOR, collisionTile.EMPTY)
+    if (this.levelMap.collisionMap[cell.row][cell.col] === CollisionTile.BARRIER.BLOCK) {
+      this.levelMap.updateMapAt(cell, Tile.FLOOR, CollisionTile.EMPTY)
     }
   }
 
@@ -29,7 +29,7 @@ class BombsSystem {
       cell.row += direction[0]
       cell.col += direction[1]
 
-      if (this.levelMap.collisionMap[cell.row][cell.col] !== collisionTile.EMPTY) break
+      if (this.levelMap.collisionMap[cell.row][cell.col] !== CollisionTile.EMPTY) break
 
       flameCells.push({ ...cell })
     }
@@ -44,7 +44,7 @@ class BombsSystem {
 
     const flameCells = []
 
-    flameDirections.forEach(direction => {
+    FlameDirection.forEach(direction => {
       const { cells, lastCell } = this.getFlameCells(direction, bomb.cell, bombStrength)
 
       this.checkFlamesCollision(lastCell)
@@ -54,9 +54,9 @@ class BombsSystem {
 
     this.bombs[bombIndex] = new BombExplosion(bomb.cell, flameCells, this.remove, time)
 
-    this.levelMap.collisionMap[bomb.cell.row][bomb.cell.col] = collisionTile.FLAME
+    this.levelMap.collisionMap[bomb.cell.row][bomb.cell.col] = CollisionTile.FLAME
     flameCells.forEach(flameCell => {
-      this.levelMap.collisionMap[flameCell.row][flameCell.col] = collisionTile.FLAME
+      this.levelMap.collisionMap[flameCell.row][flameCell.col] = CollisionTile.FLAME
     })
   }
 
@@ -67,9 +67,9 @@ class BombsSystem {
     
     this.bombs.splice(explosionIndex, 1)
 
-    this.levelMap.collisionMap[bombExplosion.cell.row][bombExplosion.cell.col] = collisionTile.EMPTY
+    this.levelMap.collisionMap[bombExplosion.cell.row][bombExplosion.cell.col] = CollisionTile.EMPTY
     bombExplosion.flameCells.forEach(flameCell => {
-      this.levelMap.collisionMap[flameCell.row][flameCell.col] = collisionTile.EMPTY
+      this.levelMap.collisionMap[flameCell.row][flameCell.col] = CollisionTile.EMPTY
     })
   }
 
@@ -80,7 +80,7 @@ class BombsSystem {
       this.handleBombExploded(time, bomb, bombStrength)
     }))
 
-    this.levelMap.collisionMap[cell.row][cell.col] = collisionTile.BARRIER.BOMB
+    this.levelMap.collisionMap[cell.row][cell.col] = CollisionTile.BARRIER.BOMB
   }
 
   draw(ctx) {

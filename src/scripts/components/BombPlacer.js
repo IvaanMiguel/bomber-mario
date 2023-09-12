@@ -1,4 +1,4 @@
-import { TILE_SIZE, collisionTile } from '../constants.js'
+import { TILE_SIZE, CollisionTile } from '../constants.js'
 import { getLastControlDown, isAction } from '../core/inputHandler.js'
 
 class BombPlacer {
@@ -36,7 +36,7 @@ class BombPlacer {
         col: Math.floor(this.inst.position.x / TILE_SIZE),
       }
 
-      if (this.inst.levelMap.collisionMap[playerCell.row][playerCell.col] !== collisionTile.EMPTY) return
+      if (this.inst.levelMap.collisionMap[playerCell.row][playerCell.col] !== CollisionTile.EMPTY) return
 
       this.bombAmount -= 1
       this.lastBombCell = playerCell

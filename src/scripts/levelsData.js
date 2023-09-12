@@ -1,7 +1,7 @@
-import { tile } from './constants.js'
+import { Tile } from './constants.js'
 
-const W = tile.WALL
-const F = tile.FLOOR
+const W = Tile.WALL
+const F = Tile.FLOOR
 
 export default [
   [

@@ -1,9 +1,9 @@
 import {
   HALF_TILE_SIZE,
   TILE_SIZE,
-  cornerDirections,
+  CornerDirection,
   Direction,
-  movementOrientation,
+  MovementOrientation,
   CollisionTile,
   WALK_SPEED,
   PlayerAnimation,
@@ -118,7 +118,7 @@ class Player extends Entity {
   }
 
   allignBetweenWalls(collisionCoords, alternativeDirection, playerDirection, time) {
-    const { x, y } = movementOrientation[alternativeDirection]
+    const { x, y } = MovementOrientation[alternativeDirection]
     
     // Se presiona arriba o abajo, lo que corregirá la posición entre dos paredes derechas (x = 1) o izquierdas (x = -1).
     if (x !== 0) {
@@ -128,7 +128,7 @@ class Player extends Entity {
       if (nextCellToCollide === CollisionTile.BARRIER.WALL) {
         this.position.x = Math.floor((nextCollisionCol - x) * TILE_SIZE + HALF_TILE_SIZE)
   
-        return [alternativeDirection, movementOrientation[playerDirection]]
+        return [alternativeDirection, MovementOrientation[playerDirection]]
       }
     }
 
@@ -140,15 +140,15 @@ class Player extends Entity {
       if (nextCellToCollide === CollisionTile.BARRIER.WALL) {
         this.position.y = Math.floor((nextCollisionRow - y) * TILE_SIZE + HALF_TILE_SIZE)
   
-        return [alternativeDirection, movementOrientation[playerDirection]]
+        return [alternativeDirection, MovementOrientation[playerDirection]]
       }
     }
 
-    return [alternativeDirection, movementOrientation[alternativeDirection]]
+    return [alternativeDirection, MovementOrientation[alternativeDirection]]
   }
 
   correctPositionAgainstWall(collisionCoords, playerDirection) {
-    const { x, y } = movementOrientation[playerDirection]
+    const { x, y } = MovementOrientation[playerDirection]
 
     if (y !== 0) {
       this.position.y = playerDirection === Direction.UP
@@ -201,7 +201,7 @@ class Player extends Entity {
       return [playerDirection, { x: 0, y: 0 }]
     }
 
-    const alternativeDirections = cornerDirections[playerDirection]
+    const alternativeDirections = CornerDirection[playerDirection]
 
     if (this.isBarrierTile(collisionTiles[0])) {
       return this.allignBetweenWalls(collisionCoords[0], alternativeDirections[0], playerDirection, time)
@@ -210,7 +210,7 @@ class Player extends Entity {
       return this.allignBetweenWalls(collisionCoords[1], alternativeDirections[1], playerDirection, time)
     }
 
-    return [playerDirection, movementOrientation[playerDirection]]
+    return [playerDirection, MovementOrientation[playerDirection]]
   }
 
   getMovement(time){
