@@ -49,12 +49,18 @@ export const collisionTile = {
   FLAME: 105
 }
 
+export const tileCollisionMapping = {
+  [tile.WALL]: collisionTile.BARRIER.WALL,
+  [tile.FLOOR]: collisionTile.EMPTY,
+  [tile.BLOCK]: collisionTile.BARRIER.BLOCK
+}
+
 export const startTiles = [[1, 1], [1, 2], [2, 1]]
 
 export const BOMB_TIMER = 2 * 1000
 export const EXPLOSION_TIMER = .5 * 1000
 
-export const MAX_TOTAL_BLOCKS = 70
+export const MAX_TOTAL_BLOCKS = 50
 
 export const TILE_SIZE = 16
 export const HALF_TILE_SIZE = TILE_SIZE / 2
