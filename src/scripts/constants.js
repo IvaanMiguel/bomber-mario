@@ -35,7 +35,8 @@ export const flameDirections = [[0, -1], [-1, 0], [0, 1], [1, 0]]
 export const tile = {
   WALL: 10,
   FLOOR: 11,
-  BLOCK: 12
+  BLOCK: 12,
+  GOAL: 13
 }
 
 export const collisionTile = {
