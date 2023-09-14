@@ -1,10 +1,11 @@
-import { FRAME_TIME, TILE_SIZE } from '../constants/game.js'
+import { FRAME_TIME, Sprite, TILE_SIZE } from '../constants/game.js'
 import { BOTTOM_LAST_FRAME_1, CenterExplosionAnimation, EXPLOSION_FRAME_DELAY, FlameAnimation, HORIZONTAL_FRAME_1, LEFT_LAST_FRAME_1, RIGHT_LAST_FRAME_1, UP_LAST_FRAME_1, VERTICAL_FRAME_1 } from '../constants/bomb.js'
 import Entity from './Entity.js'
+import { getSprite } from './utils.js'
 
 // Clase usada únicamente para manejar el dibujado de la explosión de las bombas.
 class BombExplosion extends Entity {
-  image = document.getElementById('bomb')
+  image = Sprite.BOMB
 
   constructor(cell, flameCells, onExplosionEnd, time) {
     super({
@@ -34,15 +35,6 @@ class BombExplosion extends Entity {
     }
   }
 
-  getSprite(position) {
-    const tilesWidth = this.image.width / TILE_SIZE
-
-    return {
-      originX: (position % tilesWidth) * TILE_SIZE,
-      originY: Math.floor(position / tilesWidth) * TILE_SIZE
-    }
-  }
-
   updateAnimation(time) {
     if (time.previous < this.animationTimer) return
 
@@ -60,7 +52,7 @@ class BombExplosion extends Entity {
   }
 
   draw(ctx) {
-    const { originX, originY } = this.getSprite(CenterExplosionAnimation[this.animationFrame])
+    const { originX, originY } = getSprite(this.image, CenterExplosionAnimation[this.animationFrame])
 
     ctx.drawImage(
       this.image,
@@ -74,7 +66,7 @@ class BombExplosion extends Entity {
 
     this.flameCells.forEach(flameCell => {
       const firstFrameAnimation = this.getFirstFrameAnimation(flameCell)
-      const { originX, originY } = this.getSprite(firstFrameAnimation + FlameAnimation[this.animationFrame])
+      const { originX, originY } = getSprite(this.image, firstFrameAnimation + FlameAnimation[this.animationFrame])
 
       ctx.drawImage(
         this.image,
