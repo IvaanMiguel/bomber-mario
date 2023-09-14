@@ -14,7 +14,8 @@ export const PlayerFrame = {
   IDLE_LEFT: 'idle-left',
   MOVING_LEFT: 'moving-left',
   IDLE_RIGHT: 'idle-right',
-  MOVING_RIGHT: 'moving-right'
+  MOVING_RIGHT: 'moving-right',
+  DEATH: 'death'
 }
 
 export const PlayerKeyframe = {
@@ -22,9 +23,13 @@ export const PlayerKeyframe = {
   [PlayerFrame.MOVING_RIGHT]: { originX: 12, originY: 0, width: 14, height: 16, timer: 4 },
   [PlayerFrame.IDLE_LEFT]: { originX: 26, originY: 0, width: 12, height: 16, timer: 4 },
   [PlayerFrame.MOVING_LEFT]: { originX: 38, originY: 0, width: 14, height: 16, timer: 4 },
+  [PlayerFrame.DEATH]: { originX: 52, originY: 0, width: 16, height: 16, timer: 50 }
 }
 
 export const PlayerAnimation = {
-  [Direction.RIGHT]: [PlayerKeyframe[PlayerFrame.IDLE_RIGHT], PlayerKeyframe[PlayerFrame.MOVING_RIGHT]],
-  [Direction.LEFT]: [PlayerKeyframe[PlayerFrame.IDLE_LEFT], PlayerKeyframe[PlayerFrame.MOVING_LEFT]],
+  MoveAnimation: {
+    [Direction.RIGHT]: [PlayerKeyframe[PlayerFrame.IDLE_RIGHT], PlayerKeyframe[PlayerFrame.MOVING_RIGHT]],
+    [Direction.LEFT]: [PlayerKeyframe[PlayerFrame.IDLE_LEFT], PlayerKeyframe[PlayerFrame.MOVING_LEFT]],
+  },
+  DeathAnimation: [PlayerKeyframe[PlayerFrame.DEATH], PlayerKeyframe[PlayerFrame.DEATH]]
 }
