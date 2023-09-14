@@ -1,10 +1,10 @@
 import { BOMB_TIMER, BombAnimation } from '../constants/bomb.js'
-import { FRAME_TIME, HALF_TILE_SIZE, TILE_SIZE } from '../constants/game.js'
+import { FRAME_TIME, HALF_TILE_SIZE, Sprite, TILE_SIZE } from '../constants/game.js'
 
 import Entity from './Entity.js'
 
 class Bomb extends Entity {
-  image = document.getElementById('bomb')
+  image = Sprite.BOMB
   animation = BombAnimation
 
   constructor(position, time, onBombEnd) {
@@ -14,9 +14,6 @@ class Bomb extends Entity {
     })
 
     this.cell = position
-
-    this.width = 16
-    this.height = 16
 
     this.timer = time.previous + BOMB_TIMER
     this.onBombEnd = onBombEnd
