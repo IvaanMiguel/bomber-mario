@@ -34,7 +34,11 @@ class BombsSystem {
 
       if (this.levelMap.collisionMap[cell.row][cell.col] !== CollisionTile.EMPTY) break
 
-      flameCells.push({ ...cell })
+      flameCells.push({
+        cell: { ...cell },
+        isVertical: direction[0] !== 0,
+        isLast: i === flameLength
+      })
     }
 
     return { cells: flameCells, lastCell: cell }
@@ -59,7 +63,7 @@ class BombsSystem {
 
     this.levelMap.collisionMap[bomb.cell.row][bomb.cell.col] = CollisionTile.FLAME
     flameCells.forEach(flameCell => {
-      this.levelMap.collisionMap[flameCell.row][flameCell.col] = CollisionTile.FLAME
+      this.levelMap.collisionMap[flameCell.cell.row][flameCell.cell.col] = CollisionTile.FLAME
     })
   }
 
@@ -72,7 +76,7 @@ class BombsSystem {
 
     this.levelMap.collisionMap[bombExplosion.cell.row][bombExplosion.cell.col] = CollisionTile.EMPTY
     bombExplosion.flameCells.forEach(flameCell => {
-      this.levelMap.collisionMap[flameCell.row][flameCell.col] = CollisionTile.EMPTY
+      this.levelMap.collisionMap[flameCell.cell.row][flameCell.cell.col] = CollisionTile.EMPTY
     })
   }
 
