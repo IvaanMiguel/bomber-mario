@@ -2,6 +2,7 @@ import {
   CollisionTile,
   FRAME_TIME,
   HALF_TILE_SIZE,
+  Sprite,
   TILE_SIZE
 } from '../constants/game.js';
 import { addComponent } from '../components/utils.js';
@@ -13,10 +14,10 @@ import BombPlacer from '../components/BombPlacer.js';
 import Entity from './Entity.js';
 
 class Player extends Entity {
-  image = document.getElementById('mario')
+  image = Sprite.PLAYER
   animation = PlayerAnimation.MoveAnimation[Direction.RIGHT]
 
-  constructor(position, levelMap, addBomb, goalReached, time) {
+  constructor(position, levelMap, goal, addBomb, goalReached, time) {
     super({
       x: position.col * TILE_SIZE + HALF_TILE_SIZE,
       y: position.row * TILE_SIZE + HALF_TILE_SIZE
@@ -28,6 +29,7 @@ class Player extends Entity {
     this.height = TILE_SIZE
 
     this.levelMap = levelMap
+    this.goal = goal
     this.addBomb = addBomb
     this.goalReached = goalReached
 
@@ -241,7 +243,7 @@ class Player extends Entity {
   }
 
   checkGoalReached(playerCell, time) {
-    const goalCoords = this.levelMap.goalCoords
+    const goalCoords = this.goal.cell
 
     if (playerCell.row !== goalCoords.row || playerCell.col !== goalCoords.col) return
 
