@@ -296,8 +296,8 @@ class Player extends Entity {
       originX, originY,
       width, height,
       Math.floor(this.position.x - HALF_TILE_SIZE) + (TILE_SIZE - width) / 2,
-      Math.floor(this.position.y - HALF_TILE_SIZE),
-      width, TILE_SIZE
+      Math.floor(this.position.y - HALF_TILE_SIZE) + (TILE_SIZE - height) / 2,
+      width, height
     )
   }
 }
