@@ -1,23 +1,18 @@
 import {
-  BACKGROUND_COLOR,
   MAX_TOTAL_BLOCKS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
+  Sprite,
   TILE_SIZE
 } from '../constants/game.js'
 import TileMaps from '../constants/levelsdata.js'
 import { StartTile } from '../constants/player.js'
-import { CollisionTile, Tile, tileCollisionMapping, } from '../constants/game.js'
+import { CollisionTile, Tile, TileCollisionMapping, } from '../constants/game.js'
 
 import Entity from './Entity.js'
 
-const tileColor = {
-  13: 'purple'
-}
-
 class LevelMap extends Entity {
-  image = document.getElementById('tiles')
-  goalCoords = { row: 0, col: 0 }
+  image = Sprite.TILES
   blocks = []
   lastMapIndex = null
   
@@ -41,7 +36,7 @@ class LevelMap extends Entity {
 
       for (let col = 0; col < tileMap[0].length; col++) {
         const tile = tileMap[row][col]
-        rowCollisions.push(tileCollisionMapping[tile])
+        rowCollisions.push(TileCollisionMapping[tile])
       }
 
       collisionMap.push(rowCollisions)
@@ -117,19 +112,6 @@ class LevelMap extends Entity {
     }
   }
 
-  addGoal() {
-    const index = Math.floor(Math.random() * this.blocks.length)
-    this.goalCoords = this.blocks[index]
-    
-    this.tileMap[this.goalCoords.row][this.goalCoords.col] = Tile.GOAL
-  }
-
-  strokeCorner() {
-    this.ctx.strokeStyle = BACKGROUND_COLOR
-    this.ctx.lineWidth = 2
-    this.ctx.strokeRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-  }
-
   buildMap() {
     for (let row = 0; row < this.tileMap.length; row++) {
       for (let col = 0; col < this.tileMap[row].length; col++) {
@@ -140,22 +122,10 @@ class LevelMap extends Entity {
     }
 
     this.addBlocks()
-    this.addGoal()
-
-    this.strokeCorner()
-  }
-
-  drawGoal(ctx) {
-    ctx.fillStyle = tileColor[13]
-    ctx.fillRect(this.goalCoords.col * TILE_SIZE, this.goalCoords.row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   draw(ctx) {
     ctx.drawImage(this.mapImage, this.position.x, this.position.y)
-
-    if (this.collisionMap[this.goalCoords.row][this.goalCoords.col] === CollisionTile.BARRIER.BLOCK) return
-
-    this.drawGoal(ctx)
   }
 }
 
