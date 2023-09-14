@@ -21,8 +21,8 @@ class Scene {
     )
   }
 
-  onGoalReached = () => {
-    this.player.restartPlayer()
+  onGoalReached = (time) => {
+    this.player.restartPlayer(time)
     this.levelMap.regenMap()
     this.bombsSystem.resetBombs()
   }
