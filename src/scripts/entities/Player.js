@@ -14,7 +14,7 @@ import Entity from './Entity.js';
 
 class Player extends Entity {
   image = document.getElementById('mario')
-  animation = PlayerAnimation[Direction.RIGHT]
+  animation = PlayerAnimation.MoveAnimation[Direction.RIGHT]
 
   constructor(position, levelMap, addBomb, goalReached, time) {
     super({
@@ -41,6 +41,11 @@ class Player extends Entity {
         type: PlayerState.MOVING,
         init: this.initMovingState,
         update: this.handleMovingState
+      },
+      [PlayerState.DEATH]: {
+        type: PlayerState.DEATH,
+        init: this.initDeathState,
+        update: this.handleDeathState
       }
     }
 
@@ -59,7 +64,7 @@ class Player extends Entity {
     const [playerDirection, velocity] = this.getMovement(time)
 
     if (playerDirection === Direction.RIGHT || playerDirection === Direction.LEFT) {
-      this.animation = PlayerAnimation[playerDirection]
+      this.animation = PlayerAnimation.MoveAnimation[playerDirection]
     }
 
     return velocity
@@ -87,6 +92,15 @@ class Player extends Entity {
     if (this.velocity.x !== 0 || this.velocity.y !== 0) return
 
     this.changeState(PlayerState.IDLE, time)
+  }
+
+  initDeathState = () => {
+    this.velocity = { x: 0, y: 0 }
+    this.animation = PlayerAnimation.DeathAnimation
+  }
+
+  handleDeathState = (time) => {
+    if (this.animationFrame >= PlayerAnimation.DeathAnimation.length - 1) this.restartPlayer(time)
   }
 
   getCollisionCoords(playerDirection) {
@@ -223,18 +237,18 @@ class Player extends Entity {
       return this.checkWallCollision(Direction.RIGHT, time)
     }
 
-    return [Direction.DOWN, { x: 0, y: 0 }]
+    return [Direction.RIGHT, { x: 0, y: 0 }]
   }
 
-  checkGoalReached(playerCell) {
+  checkGoalReached(playerCell, time) {
     const goalCoords = this.levelMap.goalCoords
 
     if (playerCell.row !== goalCoords.row || playerCell.col !== goalCoords.col) return
 
-    this.goalReached()
+    this.goalReached(time)
   }
 
-  checkCellUnderneath() {
+  checkCellUnderneath(time) {
     const playerCell = {
       row: Math.floor(this.position.y / TILE_SIZE),
       col: Math.floor(this.position.x / TILE_SIZE),
@@ -244,10 +258,10 @@ class Player extends Entity {
    
     // Para revisar si se colisiona con una llama.
     if (this.getCollisionTile(playerCell) === CollisionTile.FLAME) {
-      this.resetPosition()
+      this.changeState(PlayerState.DEATH, time)
     }
 
-    this.checkGoalReached(playerCell)
+    this.checkGoalReached(playerCell, time)
   }
 
   resetPosition() {
@@ -257,8 +271,11 @@ class Player extends Entity {
     }
   }
 
-  restartPlayer() {
+  restartPlayer(time) {
+    this.changeState(PlayerState.IDLE, time)
+    this.animationFrame = 0
     this.resetPosition()
+    this.velocity = { x: 0, y: 0 }
     this.bombPlacer.bombAmount = 1
   }
 
@@ -285,7 +302,7 @@ class Player extends Entity {
     this.updateAnimation(time)
     this.currentState.update(time)
     this.bombPlacer.handleBombPlacement(time)
-    this.checkCellUnderneath()
+    this.checkCellUnderneath(time)
   }
 
   draw(ctx) {
