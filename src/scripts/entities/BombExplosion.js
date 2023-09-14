@@ -1,4 +1,5 @@
-import { EXPLOSION_TIMER, TILE_SIZE } from '../constants.js'
+import { TILE_SIZE } from '../constants/game.js'
+import { EXPLOSION_TIMER } from '../constants/bomb.js'
 
 // Clase usada únicamente para manejar el dibujado de la explosión de las bombas.
 class BombExplosion {

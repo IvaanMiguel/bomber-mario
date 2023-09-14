@@ -1,4 +1,7 @@
-import { CollisionTile, FlameDirection, Tile } from '../constants.js'
+import { Tile } from '../constants/game.js'
+import { CollisionTile } from '../constants/game.js'
+import { FlameDirection } from '../constants/bomb.js'
+
 import Bomb from '../entities/Bomb.js'
 import BombExplosion from '../entities/BombExplosion.js'
 

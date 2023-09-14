@@ -1,16 +1,15 @@
 import {
+  BACKGROUND_COLOR,
   MAX_TOTAL_BLOCKS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-  TILE_SIZE,
-  CollisionTile,
-  StartTile,
-  Tile,
-  tileCollisionMapping,
-  BACKGROUND_COLOR
-} from '../constants.js'
+  TILE_SIZE
+} from '../constants/game.js'
+import TileMaps from '../constants/levelsdata.js'
+import { StartTile } from '../constants/player.js'
+import { CollisionTile, Tile, tileCollisionMapping, } from '../constants/game.js'
+
 import Entity from './Entity.js'
-import TileMaps from '../levelsData.js'
 
 const tileColor = {
   13: 'purple'

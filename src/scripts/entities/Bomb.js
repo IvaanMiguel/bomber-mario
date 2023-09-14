@@ -1,4 +1,6 @@
-import { BOMB_TIMER, HALF_TILE_SIZE, TILE_SIZE } from '../constants.js'
+import { BOMB_TIMER } from '../constants/bomb.js'
+import { HALF_TILE_SIZE, TILE_SIZE } from '../constants/game.js'
+
 import Entity from './Entity.js'
 
 class Bomb extends Entity {

@@ -1,4 +1,5 @@
-import { TILE_SIZE, CollisionTile } from '../constants.js'
+import { TILE_SIZE } from '../constants/game.js'
+import { CollisionTile } from '../constants/game.js'
 import { getLastControlDown, isAction } from '../core/inputHandler.js'
 
 class BombPlacer {

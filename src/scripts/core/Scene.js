@@ -1,4 +1,5 @@
-import { SCREEN_WIDTH, SCREEN_HEIGHT } from '../constants.js'
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/game.js'
+
 import Player from '../entities/Player.js'
 import LevelMap from '../entities/LevelMap.js'
 import BombsSystem from './BombsSystem.js'

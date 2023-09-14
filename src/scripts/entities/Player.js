@@ -1,18 +1,15 @@
 import {
-  HALF_TILE_SIZE,
-  TILE_SIZE,
-  CornerDirection,
-  Direction,
-  MovementOrientation,
   CollisionTile,
-  WALK_SPEED,
-  PlayerAnimation,
-  PlayerState,
-  FRAME_TIME
-} from '../constants.js';
-import BombPlacer from '../components/BombPlacer.js';
+  FRAME_TIME,
+  HALF_TILE_SIZE,
+  TILE_SIZE
+} from '../constants/game.js';
 import { addComponent } from '../components/utils.js';
 import * as controlHandler from '../core/inputHandler.js';
+import { PlayerAnimation, PlayerState, WALK_SPEED } from '../constants/player.js';
+import { CornerDirection, Direction, MovementOrientation } from '../constants/playermovement.js';
+
+import BombPlacer from '../components/BombPlacer.js';
 import Entity from './Entity.js';
 
 class Player extends Entity {

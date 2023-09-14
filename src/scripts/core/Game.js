@@ -1,6 +1,7 @@
-import { CANVAS_ID, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants.js'
-import Scene from './Scene.js'
 import { addKeyEventsListeners } from './inputHandler.js'
+import { CANVAS_ID, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/game.js'
+
+import Scene from './Scene.js'
 
 class Game {
   canvas = document.getElementById(CANVAS_ID)
