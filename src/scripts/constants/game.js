@@ -1,3 +1,9 @@
+export const Sprite = {
+  'PLAYER': document.querySelector('img#mario'),
+  'BOMB': document.querySelector('img#bomb'),
+  'TILES': document.querySelector('img#tiles')
+}
+
 export const Tile = {
   BLOCK: 0,
   WALL: 1,
@@ -15,7 +21,7 @@ export const CollisionTile = {
   FLAME: 105
 }
 
-export const tileCollisionMapping = {
+export const TileCollisionMapping = {
   [Tile.WALL]: CollisionTile.BARRIER.WALL,
   [Tile.FLOOR]: CollisionTile.EMPTY,
   [Tile.BLOCK]: CollisionTile.BARRIER.BLOCK
