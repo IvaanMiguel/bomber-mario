@@ -1,4 +1,5 @@
 import {
+  OFFSET_Y,
   MAX_TOTAL_BLOCKS,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
@@ -17,7 +18,7 @@ class LevelMap extends Entity {
   lastMapIndex = null
   
   constructor() {
-    super({ x: 0, y: 0 })
+    super({ x: 0, y: OFFSET_Y })
     
     this.mapImage = new OffscreenCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     this.ctx = this.mapImage.getContext('2d')
