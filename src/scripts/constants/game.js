@@ -30,6 +30,8 @@ export const TileCollisionMapping = {
   [Tile.BLOCK]: CollisionTile.BARRIER.BLOCK
 }
 
+export const PAUSE_BG_COLOR = 'black'
+
 export const MAX_TOTAL_BLOCKS = 50
 
 export const TILE_SIZE = 16
@@ -39,5 +41,8 @@ export const OFFSET_Y = HALF_TILE_SIZE * 3
 
 export const SCREEN_WIDTH = 17 * TILE_SIZE
 export const SCREEN_HEIGHT = 15 * TILE_SIZE + OFFSET_Y
+
+export const PAUSE_SCREEN_WIDTH = Math.floor(SCREEN_WIDTH * .75)
+export const PAUSE_SCREEN_HEIGHT = Math.floor(SCREEN_HEIGHT * .5)
 
 export const FRAME_TIME = 1000 / 60
