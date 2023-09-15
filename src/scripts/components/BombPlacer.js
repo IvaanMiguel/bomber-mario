@@ -1,6 +1,7 @@
 import { TILE_SIZE } from '../constants/game.js'
 import { CollisionTile } from '../constants/game.js'
-import { getLastControlDown, isAction } from '../core/inputHandler.js'
+import { Control } from '../constants/playermovement.js'
+import { isKeyPressed } from '../core/inputHandler.js'
 
 class BombPlacer {
   name = 'bombPlacer'
@@ -27,9 +28,7 @@ class BombPlacer {
   }
 
   handleBombPlacement(time) {
-    const controlDown = getLastControlDown()
-
-    if (isAction(controlDown)) {
+    if (isKeyPressed(Control.ACTION)) {
       if (this.bombAmount <= 0) return
 
       const playerCell = {
