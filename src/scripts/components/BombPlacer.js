@@ -4,7 +4,7 @@ import { CollisionTile } from '../constants/game.js'
 import { PlayerState } from '../constants/player.js'
 import { Control } from '../constants/playermovement.js'
 import { isKeyPressed } from '../core/inputHandler.js'
-import { playSound } from '../core/utils.js'
+import { playSound } from '../core/soundHandler.js'
 
 class BombPlacer {
   name = 'bombPlacer'

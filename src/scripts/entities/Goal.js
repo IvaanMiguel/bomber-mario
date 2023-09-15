@@ -1,3 +1,4 @@
+import { Sound } from '../constants/audio.js';
 import {
   CollisionTile,
   FRAME_TIME,
@@ -6,6 +7,7 @@ import {
   TILE_SIZE,
   Tile
 } from '../constants/game.js';
+import { playSound } from '../core/soundHandler.js';
 
 import Entity from './Entity.js';
 import { getSpriteOrigins } from './utils.js';
@@ -16,6 +18,7 @@ const GoalAnimation = [0, 1, 2, 3]
 
 class Goal extends Entity {
   image = Sprite.TILES
+  goalReachedSound = Sound.goal
   animation = GoalAnimation
 
   constructor(levelMap, time) {
@@ -42,6 +45,8 @@ class Goal extends Entity {
   }
 
   resetGoal() {
+    playSound(this.goalReachedSound.audio, { volume: this.goalReachedSound.volume })
+
     this.isBlocked = true
     this.animationFrame = 0
     this.createGoal()

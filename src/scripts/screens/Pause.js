@@ -1,3 +1,4 @@
+import { Sound } from '../constants/audio.js';
 import {
   ControlsActionsCoords,
   ControlsActionsDimensions,
@@ -16,12 +17,14 @@ import {
 } from '../constants/game.js';
 import { Control } from '../constants/playermovement.js';
 import { isKeyPressed } from '../core/inputHandler.js';
+import { playSound, stopSound } from '../core/soundHandler.js';
 import Entity from '../entities/Entity.js';
 
 class Pause extends Entity {
   image = Sprite.PAUSE_SCREEN
   timeOnScreen = 0
   initialTime = 0
+  pauseSound = Sound.pause
 
   constructor() {
     super({
@@ -46,12 +49,18 @@ class Pause extends Entity {
 
     this.wasPaused = false
     this.timeOnScreen += (timestamp - this.timeOnScreen) - this.initialTime
+    stopSound(this.pauseSound.audio)
   }
 
   handlePause(time) {
     if (isKeyPressed(Control.PAUSE)) this.isActive = !this.isActive
 
     if (!this.isActive) return
+
+    playSound(this.pauseSound.audio, {
+      volume: this.pauseSound.volume,
+      wait: true
+    })
     this.initialTime = time.previous
     this.wasPaused = true
   }

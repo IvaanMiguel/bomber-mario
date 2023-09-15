@@ -71,7 +71,10 @@ class PlayerHud extends Entity {
   }
 
   getDigits(clockTime) {
-    return [Math.floor(clockTime / 10), clockTime % 10]
+    return [
+      Math.floor(clockTime / 10), // Decenas
+      clockTime % 10 // Unidades
+    ]
   }
 
   drawTimerDigits(timeOrigins, ctx) {
@@ -80,7 +83,7 @@ class PlayerHud extends Entity {
       this.image,
       originX, originY,
       HALF_TILE_SIZE, HALF_TILE_SIZE,
-      HALF_TILE_SIZE * (2 + i) + i + 1, HALF_TILE_SIZE,
+      HALF_TILE_SIZE * (2 + i), HALF_TILE_SIZE,
       HALF_TILE_SIZE, HALF_TILE_SIZE
       )
     })

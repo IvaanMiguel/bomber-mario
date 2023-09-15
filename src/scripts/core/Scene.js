@@ -7,11 +7,7 @@ import Player from '../entities/Player.js'
 import PlayerHud from '../entities/PlayerHud.js'
 
 class Scene {
-  constructor(canvas, time) {
-    this.canvas = canvas
-    this.ctx = this.canvas.getContext('2d')
-    this.ctx.imageSmoothingEnabled = false;
-
+  constructor(time) {
     this.playerHud = new PlayerHud()
 
     this.levelMap = new LevelMap()
@@ -36,17 +32,17 @@ class Scene {
     this.bombsSystem.resetBombs()
   }
 
-  draw() {
-    this.ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+  draw(ctx) {
+    ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    this.playerHud.draw(this.ctx)
+    this.playerHud.draw(ctx)
 
-    this.levelMap.draw(this.ctx)
-    this.goal.draw(this.ctx)
+    this.levelMap.draw(ctx)
+    this.goal.draw(ctx)
 
-    this.bombsSystem.draw(this.ctx)
+    this.bombsSystem.draw(ctx)
 
-    this.player.draw(this.ctx)
+    this.player.draw(ctx)
   }
 
   update(time) {

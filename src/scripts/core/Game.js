@@ -4,7 +4,7 @@ import { Sound } from '../constants/audio.js'
 
 import Scene from './Scene.js'
 import Pause from '../screens/Pause.js'
-import { playSound } from './utils.js'
+import { playSound } from './soundHandler.js'
 
 class Game {
   music = Sound.themeMain

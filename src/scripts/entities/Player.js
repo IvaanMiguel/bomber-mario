@@ -18,9 +18,12 @@ import { PlayerAnimation, PlayerState, WALK_SPEED } from '../constants/player.js
 
 import BombPlacer from '../components/BombPlacer.js';
 import Entity from './Entity.js';
+import { playSound, stopSound } from '../core/soundHandler.js';
+import { Sound } from '../constants/audio.js';
 
 class Player extends Entity {
   image = Sprite.PLAYER
+  playerHithSound = Sound.bombHit
   animation = PlayerAnimation.MoveAnimation[Direction.RIGHT]
 
   constructor(position, levelMap, goal, addBomb, goalReached, time) {
@@ -105,6 +108,10 @@ class Player extends Entity {
   initDeathState = () => {
     this.velocity = { x: 0, y: 0 }
     this.animation = PlayerAnimation.DeathAnimation
+    playSound(this.playerHithSound.audio, {
+      volume: this.playerHithSound.volume,
+      wait: true
+    })
   }
 
   handleDeathState = (time) => {
@@ -283,6 +290,8 @@ class Player extends Entity {
     this.resetPosition()
     this.velocity = { x: 0, y: 0 }
     this.bombPlacer.bombAmount = 1
+
+    stopSound(this.playerHithSound.audio)
   }
 
   getNextPosition(velocity, time) {

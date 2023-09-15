@@ -4,9 +4,12 @@ import { FlameDirection } from '../constants/bomb.js'
 
 import Bomb from '../entities/Bomb.js'
 import BombExplosion from '../entities/BombExplosion.js'
+import { playSound } from './soundHandler.js'
+import { Sound } from '../constants/audio.js'
 
 class BombsSystem {
   bombs = []
+  bombExplosionSound = Sound.bombExplosion
 
   constructor(levelMap) {
     this.levelMap = levelMap
@@ -83,6 +86,8 @@ class BombsSystem {
   // Método principal que le da la habilidad al jugador de agregar mecánicamente bombas al juego.
   add = (cell, time, bombStrength, onBombExploded) => {
     this.bombs.push(new Bomb(cell, time, (bomb) => {
+      playSound(this.bombExplosionSound.audio, { volume: this.bombExplosionSound.volume })
+
       onBombExploded(bomb)
       this.handleBombExploded(time, bomb, bombStrength)
     }))
