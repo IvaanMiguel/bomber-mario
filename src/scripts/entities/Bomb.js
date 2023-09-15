@@ -1,5 +1,11 @@
+import {
+  FRAME_TIME,
+  HALF_TILE_SIZE,
+  OFFSET_Y,
+  Sprite,
+  TILE_SIZE
+} from '../constants/game.js'
 import { BOMB_TIMER, BombAnimation } from '../constants/bomb.js'
-import { FRAME_TIME, HALF_TILE_SIZE, Sprite, TILE_SIZE } from '../constants/game.js'
 
 import Entity from './Entity.js'
 
@@ -47,7 +53,7 @@ class Bomb extends Entity {
       originX, originY,
       width, height,
       this.position.x - HALF_TILE_SIZE + (TILE_SIZE - width) / 2,
-      this.position.y - HALF_TILE_SIZE + (TILE_SIZE - height) / 2,
+      this.position.y - HALF_TILE_SIZE + (TILE_SIZE - height) / 2 + OFFSET_Y,
       width, height
     )
   }
