@@ -3,6 +3,7 @@ import { PlayerControl } from '../constants/playermovement.js';
 
 const playerKeys = Object.values(PlayerControl).flat()
 const heldKeys = new Set()
+const pressedKeys = new Set();
 
 function handleKeyDown(e) {
   if (!playerKeys.includes(e.code)) return
@@ -16,6 +17,7 @@ function handleKeyUp(e) {
 
   e.preventDefault()
   heldKeys.delete(e.code)
+  pressedKeys.delete(e.code);
 }
 
 function handleVisibilityChange() {
@@ -29,12 +31,17 @@ export function addKeyEventsListeners() {
   window.addEventListener('visibilitychange', handleVisibilityChange)
 }
 
+const getLastControlDown = () => [...heldKeys][heldKeys.size - 1]
 
-export const isUp = key => PlayerControl[Control.UP] === key
-export const isLeft = key => PlayerControl[Control.LEFT] === key
-export const isDown = key => PlayerControl[Control.DOWN] === key
-export const isRight = key => PlayerControl[Control.RIGHT] === key
-export const isAction = key => PlayerControl[Control.ACTION] === key
+export function isKeyHeld(control) {
+  return PlayerControl[control] === getLastControlDown()
+}
 
-// export const noControlDown = () => heldKeys.size === 0
-export const getLastControlDown = () => [...heldKeys][heldKeys.size - 1]
+export function isKeyPressed(key) {
+	if (heldKeys.has(PlayerControl[key]) && !pressedKeys.has(PlayerControl[key])) {
+		pressedKeys.add(PlayerControl[key]);
+		return true;
+	}
+
+	return false;
+}
