@@ -1,5 +1,6 @@
 import {
   CollisionTile,
+  OFFSET_Y,
   FRAME_TIME,
   HALF_TILE_SIZE,
   Sprite,
@@ -315,7 +316,7 @@ class Player extends Entity {
       originX, originY,
       width, height,
       Math.floor(this.position.x - HALF_TILE_SIZE) + (TILE_SIZE - width) / 2,
-      Math.floor(this.position.y - HALF_TILE_SIZE) + (TILE_SIZE - height) / 2,
+      Math.floor(this.position.y - HALF_TILE_SIZE) + (TILE_SIZE - height) / 2 + OFFSET_Y,
       width, height
     )
   }
