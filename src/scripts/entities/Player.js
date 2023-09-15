@@ -6,10 +6,15 @@ import {
   Sprite,
   TILE_SIZE
 } from '../constants/game.js';
+import {
+  Control,
+  CornerDirection,
+  Direction,
+  MovementOrientation
+} from '../constants/playermovement.js';
 import { addComponent } from '../components/utils.js';
-import * as controlHandler from '../core/inputHandler.js';
+import { isKeyHeld } from '../core/inputHandler.js';
 import { PlayerAnimation, PlayerState, WALK_SPEED } from '../constants/player.js';
-import { CornerDirection, Direction, MovementOrientation } from '../constants/playermovement.js';
 
 import BombPlacer from '../components/BombPlacer.js';
 import Entity from './Entity.js';
@@ -228,15 +233,13 @@ class Player extends Entity {
   }
 
   getMovement(time){
-    const controlDown = controlHandler.getLastControlDown()
-
-    if (controlHandler.isUp(controlDown)) {
+    if (isKeyHeld(Control.UP)) {
       return this.checkWallCollision(Direction.UP, time)
-    } else if (controlHandler.isLeft(controlDown)) {
+    } else if (isKeyHeld(Control.LEFT)) {
       return this.checkWallCollision(Direction.LEFT, time)
-    } else if (controlHandler.isDown(controlDown)) {
+    } else if (isKeyHeld(Control.DOWN)) {
       return this.checkWallCollision(Direction.DOWN, time)
-    } else if (controlHandler.isRight(controlDown)) {
+    } else if (isKeyHeld(Control.RIGHT)) {
       return this.checkWallCollision(Direction.RIGHT, time)
     }
 
