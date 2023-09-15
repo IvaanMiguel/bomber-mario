@@ -1,7 +1,10 @@
+export const CANVAS_ID = 'canvas'
+
 export const Sprite = {
   'PLAYER': document.querySelector('img#mario'),
   'BOMB': document.querySelector('img#bomb'),
-  'TILES': document.querySelector('img#tiles')
+  'TILES': document.querySelector('img#tiles'),
+  'HUD': document.querySelector('img#hud')
 }
 
 export const Tile = {
@@ -27,16 +30,14 @@ export const TileCollisionMapping = {
   [Tile.BLOCK]: CollisionTile.BARRIER.BLOCK
 }
 
-export const BACKGROUND_COLOR = 'black'
-
 export const MAX_TOTAL_BLOCKS = 50
 
 export const TILE_SIZE = 16
 export const HALF_TILE_SIZE = TILE_SIZE / 2
 
+export const OFFSET_Y = HALF_TILE_SIZE * 3
+
 export const SCREEN_WIDTH = 17 * TILE_SIZE
-export const SCREEN_HEIGHT = 15 * TILE_SIZE
+export const SCREEN_HEIGHT = 15 * TILE_SIZE + OFFSET_Y
 
 export const FRAME_TIME = 1000 / 60
-
-export const CANVAS_ID = 'canvas'
