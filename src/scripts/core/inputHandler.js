@@ -1,4 +1,3 @@
-import { Control } from '../constants/playermovement.js';
 import { PlayerControl } from '../constants/playermovement.js';
 
 const playerKeys = Object.values(PlayerControl).flat()
