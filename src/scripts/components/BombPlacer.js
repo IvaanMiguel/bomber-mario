@@ -1,13 +1,17 @@
+import { Sound } from '../constants/audio.js'
 import { TILE_SIZE } from '../constants/game.js'
 import { CollisionTile } from '../constants/game.js'
+import { PlayerState } from '../constants/player.js'
 import { Control } from '../constants/playermovement.js'
 import { isKeyPressed } from '../core/inputHandler.js'
+import { playSound } from '../core/utils.js'
 
 class BombPlacer {
   name = 'bombPlacer'
   bombAmount = 1
   bombStrength = 2
   lastBombCell = null
+  bombPlacedSound = Sound.placeBomb
 
   constructor(inst) {
     this.inst = inst
@@ -28,21 +32,23 @@ class BombPlacer {
   }
 
   handleBombPlacement(time) {
-    if (isKeyPressed(Control.ACTION)) {
-      if (this.bombAmount <= 0) return
+    if (!isKeyPressed(Control.ACTION)) return
 
-      const playerCell = {
-        row: Math.floor(this.inst.position.y / TILE_SIZE),
-        col: Math.floor(this.inst.position.x / TILE_SIZE),
-      }
+    if (this.bombAmount <= 0 || this.inst.currentState.type === PlayerState.DEATH) return
 
-      if (this.inst.levelMap.collisionMap[playerCell.row][playerCell.col] !== CollisionTile.EMPTY) return
+    playSound(this.bombPlacedSound.audio, { volume: this.bombPlacedSound.volume })
 
-      this.bombAmount -= 1
-      this.lastBombCell = playerCell
-
-      this.inst.addBomb(playerCell, time, this.bombStrength, this.onBombExploded)
+    const playerCell = {
+      row: Math.floor(this.inst.position.y / TILE_SIZE),
+      col: Math.floor(this.inst.position.x / TILE_SIZE),
     }
+
+    if (this.inst.levelMap.collisionMap[playerCell.row][playerCell.col] !== CollisionTile.EMPTY) return
+
+    this.bombAmount -= 1
+    this.lastBombCell = playerCell
+
+    this.inst.addBomb(playerCell, time, this.bombStrength, this.onBombExploded)
   }
 }
 
