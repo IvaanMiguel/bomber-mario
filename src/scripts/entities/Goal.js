@@ -1,13 +1,14 @@
 import {
   CollisionTile,
   FRAME_TIME,
+  OFFSET_Y,
   Sprite,
   TILE_SIZE,
   Tile
 } from '../constants/game.js';
 
 import Entity from './Entity.js';
-import { getSprite } from './utils.js';
+import { getSpriteOrigins } from './utils.js';
 
 const FRAME_DELAY = 16
 const FIRST_FRAME = 4
@@ -66,13 +67,13 @@ class Goal extends Entity {
   draw(ctx) {
     if (this.isBlocked) return
 
-    const { originX, originY } = getSprite(this.image, FIRST_FRAME + this.animation[this.animationFrame])
+    const { originX, originY } = getSpriteOrigins(this.image, FIRST_FRAME + this.animation[this.animationFrame])
 
     ctx.drawImage(
       this.image,
       originX, originY,
       TILE_SIZE, TILE_SIZE,
-      this.position.x, this.position.y,
+      this.position.x, this.position.y + OFFSET_Y,
       TILE_SIZE, TILE_SIZE
     )
   }
