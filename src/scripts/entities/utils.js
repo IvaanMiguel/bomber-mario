@@ -3,12 +3,13 @@ import { TILE_SIZE } from '../constants/game.js'
 /**
  * @param {HTMLImageElement} image
  * @param {number} tileIndex
+ * @param {number} tileSize
  */
-export const getSprite = (image, tileIndex) => {
-  const tilesWidth = image.width / TILE_SIZE
+export const getSpriteOrigins = (image, tileIndex, tileSize = TILE_SIZE) => {
+  const tilesWidth = image.width / tileSize
 
   return {
-    originX: (tileIndex % tilesWidth) * TILE_SIZE,
-    originY: Math.floor(tileIndex / tilesWidth) * TILE_SIZE
+    originX: (tileIndex % tilesWidth) * tileSize,
+    originY: Math.floor(tileIndex / tilesWidth) * tileSize
   }
 }
